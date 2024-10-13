@@ -6,5 +6,13 @@
   "home.title.councilAsOfDate": "Grosser Rat am:",
   "councilSelection.datePicker.selectDate": "Datum auswählen",
   "councilSelection.button.loadData": "Daten laden",
-  "modal.card.title": "Daten werden geladen"
+  "modal.card.title": "Daten werden geladen",
+  "modal.currentlyLoading.members": "Ratsmitglieder",
+  "modal.currentlyLoading.fractions": "Fraktionen",
+  "modal.currentlyLoading.commissions": "Kommissionen",
+  "modal.currentlyLoading.conflictsOfInterest": "Interessensbindungen",
+  "modal.currentlyLoading.impetuses": "Parlamentarische Vorstösse",
+  "modal.currentlyLoading.listOfVotes": "Schlussabstimmungen",
+  "modal.currentlyLoading.voteResults": "Abstimmungsresultate",
+  "council.member.noFraktion": "Fraktionslos"
 }

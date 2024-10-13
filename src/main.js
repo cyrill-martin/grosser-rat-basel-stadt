@@ -1,6 +1,6 @@
 import "./assets/main.css"
-// import "vfonts/Inter.css"
-import "vfonts/FiraCode.css"
+import "vfonts/Inter.css"
+// import "vfonts/FiraCode.css"
 
 import { createApp } from "vue"
 import { createPinia } from "pinia"

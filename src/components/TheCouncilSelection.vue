@@ -22,7 +22,11 @@ watch(
   () => option.value,
   () => {
     if (option.value === "current") {
-      asOfDate.value = null
+      asOfDate.value = null // Reset data picker
+      council.setAsOfDate(null) // Make sure to reset date in state anyways
+      council.resetAsOfDateMembers()
+      council.resetAsOfDateListOfVotes()
+      council.getData() // Get current members (probably from state)
     }
   }
 )
@@ -53,9 +57,9 @@ const disabledDatePicker = computed(() => {
 })
 
 // Data loading button
-// const disabledButton = computed(() => {
-//   return asOfDate.value === null
-// })
+const disabledButton = computed(() => {
+  return asOfDate.value === null || asOfDate.value === council.lastAsOfTimestamp
+})
 
 // The data loading modal
 const showModal = computed(() => {
@@ -81,6 +85,8 @@ const showModal = computed(() => {
     <n-flex :size="0">
       <!-- Hint: in JavaScript, months are zero-indexed. (2009, 1, 1) is 2009-02-01!! -->
       <n-date-picker
+        :disabled="disabledDatePicker"
+        v-model:value="asOfDate"
         size="small"
         input-readonly
         :actions="null"
@@ -92,11 +98,8 @@ const showModal = computed(() => {
           }
         "
         :placeholder="t('councilSelection.datePicker.selectDate')"
-        :disabled="disabledDatePicker"
-        v-model:value="asOfDate"
       />
-      <!-- :disabled="disabledButton" -->
-      <n-button type="primary" size="small" @click="council.fetchData">
+      <n-button :disabled="disabledButton" type="primary" size="small" @click="council.getData">
         {{ $t("councilSelection.button.loadData") }}
       </n-button>
     </n-flex>

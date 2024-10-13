@@ -1,36 +1,12 @@
 <script setup>
 import { NFlex } from "naive-ui"
-import { computed } from "vue"
-// import { debounce } from "../utils/debounce.js"
 import { useScreenSizeStore } from "../stores/screenSize.js"
 import { useCouncilStore } from "../stores/council.js"
 import TheCouncilSelection from "../components/TheCouncilSelection.vue"
-
-// Use a handler for i18n
-import { useI18n } from "vue-i18n"
-const { t } = useI18n()
+import TheVotesTable from "../components/TheVotesTable.vue"
 
 const screenSize = useScreenSizeStore()
 const council = useCouncilStore()
-
-const title = computed(() => {
-  return council.asOfDate && council.membersAsOfDate
-    ? `${t("home.title.councilAsOfDate")} ${council.asOfDate}`
-    : t("home.title.councilCurrent")
-})
-
-// // Watch screen size
-// watch(
-//   () => screenSize.width,
-//   () => {
-//     debouncedRecreate()
-//   }
-// )
-
-// // Handle things after screen size changes
-// const debouncedRecreate = debounce(() => {
-//   console.log("screen size changed!")
-// }, 500)
 </script>
 
 <template>
@@ -41,7 +17,7 @@ const title = computed(() => {
       </n-flex>
     </div>
     <div>
-      <b>{{ title }}</b>
+      <b>{{ council.title }}</b>
     </div>
     <div class="parliament-visualization">
       <n-flex :size="0" :vertical="screenSize.isMobile" :reverse="screenSize.isMobile">
@@ -66,7 +42,7 @@ const title = computed(() => {
       </n-flex>
     </div>
     <div>Member focus</div>
-    <div>Abstimmungsresultate, etc.</div>
+    <div><TheVotesTable /></div>
   </n-flex>
 </template>
 

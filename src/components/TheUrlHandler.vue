@@ -15,7 +15,11 @@ onMounted(async () => {
   if (qParam) {
     return
   } else {
-    council.fetchData()
+    council.getData()
   }
 })
 </script>
+
+<template>
+  <span></span>
+</template>
