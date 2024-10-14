@@ -26,6 +26,7 @@ watch(
       council.setAsOfDate(null) // Make sure to reset date in state anyways
       council.resetAsOfDateMembers()
       council.resetAsOfDateListOfVotes()
+
       council.getData() // Get current members (probably from state)
     }
   }
