@@ -1,24 +1,19 @@
 const baseUrl = "https://data.bs.ch/api/explore/v2.1/catalog/datasets"
 
 async function fetchFromDataBS(obj) {
-  const dataset = obj.dataset
-  const select = obj.select
-  const where = obj.where || false
-  const groupBy = obj.groupBy || false
-  const orderBy = obj.orderBy || false
-  const limit = obj.limit || false
-  const offset = obj.offset || false
+  const { dataset, select, where, groupBy, orderBy, limit, offset } = obj
+
+  let url = `${baseUrl}/${dataset}/records?select=${select}`
+
+  if (where) url += `&where=${where}`
+  if (groupBy) url += `&group_by=${groupBy}`
+  if (orderBy) url += `&order_by=${orderBy}`
+  if (limit) url += `&limit=${limit}`
+  if (offset) url += `&offset=${offset}`
+
+  console.log("GET", url)
 
   try {
-    let url = `${baseUrl}/${dataset}/records?select=${select}`
-    url = where ? `${url}&where=${where}` : url
-    url = groupBy ? `${url}&group_by=${groupBy}` : url
-    url = orderBy ? `${url}&order_by=${orderBy}` : url
-    url = limit ? `${url}&limit=${limit}` : url
-    url = offset ? `${url}&offset=${offset}` : url
-
-    console.log("GET", url)
-
     const options = {
       method: "GET",
       headers: {
@@ -139,10 +134,13 @@ export async function fetchImpetusData(memberIds, asOfDate) {
   return new Map(impetuses.results.map((item) => [item.nr_urheber, item.nr_of_impetuses]))
 }
 
-export async function fetchListOfVotes(asOfDate, offset) {
-  const asOfDateWhere = encodeURIComponent(`datum <= "${asOfDate}" AND typ="Schlussabstimmung"`)
-  const currentWhere = encodeURIComponent(`typ="Schlussabstimmung"`)
-  const myOffset = offset ? offset : false
+export async function fetchListOfVotes(asOfDate, limit, offset) {
+  const asOfDateWhere = encodeURIComponent(
+    `datum <= "${asOfDate}" AND datum >= "2009-02-01" AND typ="Schlussabstimmung"`
+  )
+  const currentWhere = encodeURIComponent(`typ="Schlussabstimmung" AND datum >= "2009-02-01"`)
+  const myOffset = offset || false
+  const myLimit = limit
 
   let obj = {
     dataset: "100186",
@@ -150,7 +148,7 @@ export async function fetchListOfVotes(asOfDate, offset) {
     where: asOfDate ? asOfDateWhere : currentWhere,
     groupBy: encodeURIComponent("signatur_ges, datum, typ, geschaeft, abst_nr"),
     orderBy: "-datum",
-    limit: "50",
+    limit: myLimit,
     offset: myOffset
   }
 
@@ -170,12 +168,3 @@ export async function fetchVoteResults(voteNr) {
   const voteResults = await fetchFromDataBS(obj)
   return new Map(voteResults.results.map((item) => [item.gr_uni_nr, item.entscheid_mitglied]))
 }
-
-// {
-//   "voteNr": "4376",
-//   "voteSignature": "23.0331",
-//   "voteDate": "2024-09-18",
-//   "voteTitle": "Projekt «Aufarbeitung der fürsorgerischen Zwangsmassnahmen gegenüber Erwachsenen und Jugendlichen im Kanton Basel-Stadt», Ausgabenbericht des RR",
-//   "voteType": "Schlussabstimmung",
-//   "voteImported": true
-// }

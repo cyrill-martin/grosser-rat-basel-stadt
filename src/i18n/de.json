@@ -14,5 +14,6 @@
   "modal.currentlyLoading.impetuses": "Parlamentarische Vorstösse",
   "modal.currentlyLoading.listOfVotes": "Schlussabstimmungen",
   "modal.currentlyLoading.voteResults": "Abstimmungsresultate",
-  "council.member.noFraktion": "Fraktionslos"
+  "council.member.noFraktion": "Fraktionslos",
+  "votesTable.button.loadMore": "Mehr Abstimmungen laden"
 }
