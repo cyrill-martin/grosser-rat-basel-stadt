@@ -1,10 +1,11 @@
 {
   "header.grandCouncilBaselStadt": "Grosser Rat Basel-Stadt",
+  "header.navigation.about": "Über",
   "councilSelection.radioButton.current": "Aktueller Rat",
   "councilSelection.radioButton.asOfDate": "Rat zum Datum",
   "home.title.councilCurrent": "Aktueller Grosser Rat",
   "home.title.councilAsOfDate": "Grosser Rat am:",
-  "councilSelection.datePicker.selectDate": "Datum auswählen",
+  "councilSelection.datePicker.selectDate": "Datum wählen",
   "councilSelection.button.loadData": "Daten laden",
   "modal.card.title": "Daten werden geladen",
   "modal.currentlyLoading.members": "Ratsmitglieder",
@@ -15,5 +16,11 @@
   "modal.currentlyLoading.listOfVotes": "Schlussabstimmungen",
   "modal.currentlyLoading.voteResults": "Abstimmungsresultate",
   "council.member.noFraktion": "Fraktionslos",
-  "votesTable.button.loadMore": "Mehr Abstimmungen laden"
+  "seatSelection.label.arrangement": "Sitzverteilung",
+  "seatSelection.label.feature": "Merkmal",
+  "memberFocusSelection.label": "Fokus",
+  "votesTable.label": "Schlussabstimmungen",
+  "votesTable.header.column1": "Geschäft",
+  "votesTable.tooltip.importResults": "Zu'Sitzverteilung' und 'Merkmal' hinzufügen",
+  "votesTable.tooltip.resultsImported": "Hinzugefügt"
 }

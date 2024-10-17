@@ -35,7 +35,7 @@ header {
 
 main {
   flex-grow: 1; /* Main content expands to fill any remaining space */
-  padding: 1rem;
+  padding: 0 1rem;
 }
 
 footer {

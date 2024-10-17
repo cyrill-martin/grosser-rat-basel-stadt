@@ -121,11 +121,16 @@ export async function addCounts(members, mapObject, targetKey) {
   })
 }
 
+function formatDate(dateString) {
+  const [year, month, day] = dateString.split("-")
+  return `${day}.${month}.${year}`
+}
+
 export async function mapVotesData(listOfVotes) {
   const mappedListOfVotes = listOfVotes.map((vote) => {
     const voteNr = vote.abst_nr
     const voteSignature = vote.signatur_ges
-    const voteDate = vote.datum.slice(0, 10)
+    const voteDate = formatDate(vote.datum.slice(0, 10))
     const voteTitle = vote.geschaeft
     const voteType = vote.typ
 

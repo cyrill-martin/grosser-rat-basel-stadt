@@ -11,7 +11,7 @@ const council = useCouncilStore()
 </script>
 
 <template>
-  <n-card :title="t('modal.card.title')">
+  <n-card :title="t('modal.card.title')" style="width: 80%">
     <n-flex class="container">
       <div><n-spin size="medium" /></div>
       <div>{{ council.currentlyLoading }}</div>

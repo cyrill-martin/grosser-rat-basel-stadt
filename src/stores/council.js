@@ -19,35 +19,36 @@ import {
 import { useI18n } from "vue-i18n"
 
 export const useCouncilStore = defineStore("council", () => {
-  // i18n handler
   const { t } = useI18n()
 
   // The date picker data
-  const asOfDate = ref(null) // yyyy-mm-dd
   const asOfTimestamp = ref(null) // timestamp (ms)
   const lastAsOfTimestamp = ref(null) // timestamp (ms)
+  const asOfDate = ref(null) // yyyy-mm-dd
+  // --> This is also the indication whether it's about current or asOfDate council
+  const asOfDateUi = ref(null)
 
   // Modal handling
-  const isLoading = ref(false)
-  const currentlyLoading = ref(null)
+  const isLoading = ref(false) // Show modal or not
+  const currentlyLoading = ref(null) // Label of the currently loaded data
 
   // Council data
-  const membersCurrent = ref(null)
-  const membersAsOfDate = ref(null)
-  const title = ref(null)
+  const membersCurrent = ref(null) // Keep in state even if asOfDate council is shown
+  const membersAsOfDate = ref(null) // Keep in state as long as asOfDate council is shown
+  const title = ref(null) // The title of the currently selected council
 
   // Votes for table
-  const listOfVotesCurrent = ref([])
-  const listOfVotesAsOfDate = ref([])
+  const listOfVotesCurrent = ref([]) // Last final votes of the current council; stays in state
+  const listOfVotesAsOfDate = ref([]) // Last final votes of the asOfDate council
   // The pagination of the table
-  const listOfVotesSize = ref(20)
-  const listOfVotesPageSize = ref(5)
+  const listOfVotesSize = ref(20) // Inital number of final votes to fetch from data.bs
+  const listOfVotesPageSize = ref(5) // Number of votes shown per page
 
   // Loaded vote results
-  const loadedVoteResults = ref(new Map())
+  const loadedVoteResults = ref(new Map()) // Map object to quickl get the vote titles
 
-  // Use of testdata
-  const useTestData = ref(false) // <==== TEST DATA BOOLEAN
+  // Use of testdata /////////////////////////////////////
+  const useTestData = ref(true) // <==== TEST DATA BOOLEAN
   const membersTestData = ref(null)
 
   async function loadTestData() {
@@ -58,7 +59,7 @@ export const useCouncilStore = defineStore("council", () => {
       console.error("Error loading test data:", error)
     }
   }
-  ////////////////////////
+  ////////////////////////////////////////////////////////
 
   function setAsOfDate(timestamp) {
     if (timestamp) {
@@ -71,9 +72,11 @@ export const useCouncilStore = defineStore("council", () => {
       const month = String(cetDate.getUTCMonth() + 1).padStart(2, "0")
       const day = String(cetDate.getUTCDate()).padStart(2, "0")
 
-      // YYYY-MM-DD
-      const formattedDate = `${year}-${month}-${day}`
-      asOfDate.value = formattedDate
+      const formattedDate_api = `${year}-${month}-${day}`
+      const formattedDate_ui = `${day}.${month}.${year}`
+
+      asOfDate.value = formattedDate_api
+      asOfDateUi.value = formattedDate_ui
     } else {
       asOfDate.value = null
     }
@@ -102,7 +105,7 @@ export const useCouncilStore = defineStore("council", () => {
   async function setCouncilTitle() {
     title.value =
       (await asOfDate.value) && membersAsOfDate.value
-        ? `${t("home.title.councilAsOfDate")} ${asOfDate.value}`
+        ? `${t("home.title.councilAsOfDate")} ${asOfDateUi.value}`
         : t("home.title.councilCurrent")
   }
 
@@ -127,19 +130,15 @@ export const useCouncilStore = defineStore("council", () => {
   }
 
   async function fetchRecentListOfVotes(limit, offset) {
+    const targetVotes = asOfDate.value ? listOfVotesAsOfDate : listOfVotesCurrent
+
     let fetchedVotes = await fetchListOfVotes(asOfDate.value, limit, offset)
 
     fetchedVotes = await mapVotesData(fetchedVotes)
 
-    console.log(fetchedVotes)
-    if (asOfDate.value) {
-      listOfVotesAsOfDate.value = [...listOfVotesAsOfDate.value, ...fetchedVotes]
-    } else {
-      listOfVotesCurrent.value = [...listOfVotesCurrent.value, ...fetchedVotes]
-    }
+    targetVotes.value = [...targetVotes.value, ...fetchedVotes]
 
-    console.log("current votes", listOfVotesCurrent.value)
-    console.log("date votes", listOfVotesAsOfDate.value)
+    console.log(asOfDate.value ? "asOfDate votes" : "current votes", targetVotes.value)
   }
 
   async function getData() {
@@ -195,6 +194,12 @@ export const useCouncilStore = defineStore("council", () => {
 
       // List of votes
       currentlyLoading.value = t("modal.currentlyLoading.listOfVotes")
+
+      if (asOfDate.value) {
+        // Make sure to reset asOfDate votes if only the date has changed
+        resetAsOfDateListOfVotes()
+      }
+
       await fetchRecentListOfVotes(listOfVotesSize.value, null)
 
       // Hide the data loading modal
@@ -222,12 +227,11 @@ export const useCouncilStore = defineStore("council", () => {
     addVoteResults(targetMembers.value, voteData.voteNr, voteResultsMap)
 
     setCouncilLoadingState()
-
-    console.log(targetMembers.value)
   }
 
   return {
     asOfDate,
+    asOfDateUi,
     setAsOfDate,
     isLoading,
     currentlyLoading,

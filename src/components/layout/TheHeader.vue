@@ -5,14 +5,34 @@ import { NFlex } from "naive-ui"
 
 <template>
   <n-flex>
-    <div>
-      <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="16" height="16" />
+    <div class="home-link">
       <RouterLink to="/">
         {{ $t("header.grandCouncilBaselStadt") }}
       </RouterLink>
     </div>
-    <nav>
-      <RouterLink to="/about">About</RouterLink>
-    </nav>
+    <div class="navigation">
+      <nav>
+        <RouterLink to="/about">{{ $t("header.navigation.about") }}</RouterLink>
+      </nav>
+    </div>
   </n-flex>
 </template>
+
+<style scoped>
+.home-link {
+  flex: 4;
+}
+
+.home-link a {
+  text-decoration: none;
+  color: inherit;
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+.navigation {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+}
+</style>
