@@ -21,126 +21,7 @@ import { useI18n } from "vue-i18n"
 export const useCouncilStore = defineStore("council", () => {
   const { t } = useI18n()
 
-  // The date picker data
-  const asOfTimestamp = ref(null) // timestamp (ms)
-  const lastAsOfTimestamp = ref(null) // timestamp (ms)
-  const asOfDate = ref(null) // yyyy-mm-dd
-  // --> This is also the indication whether it's about current or asOfDate council
-  const asOfDateUi = ref(null)
-
-  // Modal handling
-  const isLoading = ref(false) // Show modal or not
-  const currentlyLoading = ref(null) // Label of the currently loaded data
-
-  // Council data
-  const membersCurrent = ref(null) // Keep in state even if asOfDate council is shown
-  const membersAsOfDate = ref(null) // Keep in state as long as asOfDate council is shown
-  const title = ref(null) // The title of the currently selected council
-
-  // Votes for table
-  const listOfVotesCurrent = ref([]) // Last final votes of the current council; stays in state
-  const listOfVotesAsOfDate = ref([]) // Last final votes of the asOfDate council
-  // The pagination of the table
-  const listOfVotesSize = ref(20) // Inital number of final votes to fetch from data.bs
-  const listOfVotesPageSize = ref(5) // Number of votes shown per page
-
-  // Loaded vote results
-  const loadedVoteResults = ref(new Map()) // Map object to quickl get the vote titles
-
-  // Use of testdata /////////////////////////////////////
-  const useTestData = ref(true) // <==== TEST DATA BOOLEAN
-  const membersTestData = ref(null)
-
-  async function loadTestData() {
-    try {
-      const data = await import("../utils/testData.json")
-      return data.default.results
-    } catch (error) {
-      console.error("Error loading test data:", error)
-    }
-  }
-  ////////////////////////////////////////////////////////
-
-  function setAsOfDate(timestamp) {
-    if (timestamp) {
-      setAsOfTimestamp(timestamp)
-
-      // Add 2 hours in ms (2 * 60 * 60 * 1000)
-      const cetTimestamp = timestamp + 7200000
-      const cetDate = new Date(cetTimestamp)
-      const year = cetDate.getUTCFullYear()
-      const month = String(cetDate.getUTCMonth() + 1).padStart(2, "0")
-      const day = String(cetDate.getUTCDate()).padStart(2, "0")
-
-      const formattedDate_api = `${year}-${month}-${day}`
-      const formattedDate_ui = `${day}.${month}.${year}`
-
-      asOfDate.value = formattedDate_api
-      asOfDateUi.value = formattedDate_ui
-    } else {
-      asOfDate.value = null
-    }
-  }
-
-  function setAsOfTimestamp(timestamp) {
-    asOfTimestamp.value = timestamp
-  }
-
-  function setLastAsOfTimestamp(timestamp) {
-    lastAsOfTimestamp.value = timestamp
-  }
-
-  function resetAsOfDateMembers() {
-    membersAsOfDate.value = null
-  }
-
-  function resetAsOfDateListOfVotes() {
-    listOfVotesAsOfDate.value = []
-  }
-
-  function setCouncilLoadingState() {
-    isLoading.value = !isLoading.value
-  }
-
-  async function setCouncilTitle() {
-    title.value =
-      (await asOfDate.value) && membersAsOfDate.value
-        ? `${t("home.title.councilAsOfDate")} ${asOfDateUi.value}`
-        : t("home.title.councilCurrent")
-  }
-
-  async function checkTestData() {
-    // Load test data if not already done
-    if (useTestData.value && !membersTestData.value) {
-      membersTestData.value = await loadTestData()
-    }
-  }
-
-  async function fetchCouncilMembers() {
-    if (asOfDate.value) {
-      // Fetch asOfDate council if date is given
-      membersAsOfDate.value = await fetchMemberData(asOfDate.value)
-    } else if (!asOfDate.value && !membersCurrent.value) {
-      // Fetch current council data or test data if no date is given
-      // and current members have not been fetched already
-      useTestData.value
-        ? (membersCurrent.value = membersTestData.value)
-        : (membersCurrent.value = await fetchMemberData(null))
-    }
-  }
-
-  async function fetchRecentListOfVotes(limit, offset) {
-    const targetVotes = asOfDate.value ? listOfVotesAsOfDate : listOfVotesCurrent
-
-    let fetchedVotes = await fetchListOfVotes(asOfDate.value, limit, offset)
-
-    fetchedVotes = await mapVotesData(fetchedVotes)
-
-    targetVotes.value = [...targetVotes.value, ...fetchedVotes]
-
-    console.log(asOfDate.value ? "asOfDate votes" : "current votes", targetVotes.value)
-  }
-
+  // The MAIN function piecing together everything
   async function getData() {
     // Set target members
     const targetMembers = asOfDate.value ? membersAsOfDate : membersCurrent
@@ -202,6 +83,9 @@ export const useCouncilStore = defineStore("council", () => {
 
       await fetchRecentListOfVotes(listOfVotesSize.value, null)
 
+      // Create content for the seat dropdowns
+      await createSelectOptions(targetMembers.value)
+
       // Hide the data loading modal
       setCouncilLoadingState()
       currentlyLoading.value = null
@@ -209,6 +93,126 @@ export const useCouncilStore = defineStore("council", () => {
 
     // Set the council title for the visualization
     await setCouncilTitle()
+  }
+
+  // Modal handling
+  const isLoading = ref(false) // Show modal or not
+  const currentlyLoading = ref(null) // Label of the currently loaded data
+
+  function setCouncilLoadingState() {
+    isLoading.value = !isLoading.value
+  }
+
+  // Use of testdata
+  const useTestData = ref(true) // <==== TEST DATA BOOLEAN
+  const membersTestData = ref(null)
+
+  async function loadTestData() {
+    try {
+      const data = await import("../utils/testData.json")
+      return data.default.results
+    } catch (error) {
+      console.error("Error loading test data:", error)
+    }
+  }
+
+  async function checkTestData() {
+    // Load test data if not already done
+    if (useTestData.value && !membersTestData.value) {
+      membersTestData.value = await loadTestData()
+    }
+  }
+
+  // The date picker data
+  const asOfTimestamp = ref(null) // timestamp (ms)
+  const lastAsOfTimestamp = ref(null) // timestamp (ms)
+  const asOfDate = ref(null) // yyyy-mm-dd
+  // --> This is also the indication whether it's about current or asOfDate council
+  const asOfDateUi = ref(null)
+
+  function setAsOfDate(timestamp) {
+    if (timestamp) {
+      setAsOfTimestamp(timestamp)
+
+      // Add 2 hours in ms (2 * 60 * 60 * 1000)
+      const cetTimestamp = timestamp + 7200000
+      const cetDate = new Date(cetTimestamp)
+      const year = cetDate.getUTCFullYear()
+      const month = String(cetDate.getUTCMonth() + 1).padStart(2, "0")
+      const day = String(cetDate.getUTCDate()).padStart(2, "0")
+
+      const formattedDate_api = `${year}-${month}-${day}`
+      const formattedDate_ui = `${day}.${month}.${year}`
+
+      asOfDate.value = formattedDate_api
+      asOfDateUi.value = formattedDate_ui
+    } else {
+      asOfDate.value = null
+    }
+  }
+
+  function setAsOfTimestamp(timestamp) {
+    asOfTimestamp.value = timestamp
+  }
+
+  function setLastAsOfTimestamp(timestamp) {
+    lastAsOfTimestamp.value = timestamp
+  }
+
+  // Council data
+  const membersCurrent = ref(null) // Keep in state even if asOfDate council is shown
+  const membersAsOfDate = ref(null) // Keep in state as long as asOfDate council is shown
+  const title = ref(null) // The title of the currently selected council
+
+  function resetAsOfDateMembers() {
+    membersAsOfDate.value = null
+  }
+
+  async function fetchCouncilMembers() {
+    if (asOfDate.value) {
+      // Fetch asOfDate council if date is given
+      membersAsOfDate.value = await fetchMemberData(asOfDate.value)
+    } else if (!asOfDate.value && !membersCurrent.value) {
+      // Fetch current council data or test data if no date is given
+      // and current members have not been fetched already
+      useTestData.value
+        ? (membersCurrent.value = membersTestData.value)
+        : (membersCurrent.value = await fetchMemberData(null))
+    }
+  }
+
+  async function setCouncilTitle() {
+    title.value =
+      (await asOfDate.value) && membersAsOfDate.value
+        ? `${t("home.title.councilAsOfDate")} ${asOfDateUi.value}`
+        : t("home.title.councilCurrent")
+  }
+
+  // Votes for table
+  const listOfVotesCurrent = ref([]) // Last final votes of the current council; stays in state
+  const listOfVotesAsOfDate = ref([]) // Last final votes of the asOfDate council
+
+  // The pagination of the table
+  const listOfVotesSize = ref(20) // Inital number of final votes to fetch from data.bs
+  const listOfVotesPageSize = ref(5) // Number of votes shown per page
+
+  // Loaded vote results
+  const loadedVoteResults = ref(new Map()) // Map object to quickly get the vote titles
+
+  function resetAsOfDateListOfVotes() {
+    listOfVotesAsOfDate.value = []
+  }
+
+  async function fetchRecentListOfVotes(limit, offset) {
+    const targetVotes = asOfDate.value ? listOfVotesAsOfDate : listOfVotesCurrent
+
+    let fetchedVotes = await fetchListOfVotes(asOfDate.value, limit, offset)
+
+    fetchedVotes = await mapVotesData(fetchedVotes)
+
+    targetVotes.value = [...targetVotes.value, ...fetchedVotes]
+
+    console.log(asOfDate.value ? "asOfDate votes" : "current votes", targetVotes.value)
   }
 
   function setloadedVoteResults(voteData) {
@@ -226,7 +230,61 @@ export const useCouncilStore = defineStore("council", () => {
     const voteResultsMap = await fetchVoteResults(voteData.voteNr)
     addVoteResults(targetMembers.value, voteData.voteNr, voteResultsMap)
 
+    addToSeatOptions(voteData)
+
     setCouncilLoadingState()
+  }
+
+  // The seat selections
+  const seatOptions = ref(null)
+  const focusOptions = ref(null)
+
+  function createSeatOptions() {
+    let values = [
+      "fraction",
+      "constituency",
+      "daysInCouncil",
+      "nrCommissions",
+      "nrConflictsOfInterest",
+      "nrImpetuses",
+      "gender",
+      "age",
+      "ageGroup",
+      "occupation"
+    ]
+
+    if (!asOfDate.value) {
+      values.unshift("party")
+    }
+
+    const options = values.map((value) => {
+      return { label: t(`seatSelection.${value}`), value }
+    })
+
+    seatOptions.value = options
+  }
+
+  function addToSeatOptions(voteData) {
+    seatOptions.value.push({
+      label: voteData.voteTitle,
+      value: voteData.voteNr
+    })
+  }
+
+  function createFocusOptions(members) {
+    const names = members
+      .map((member) => `${member.name}_${member.id}`)
+      .sort()
+      .map((name) => {
+        const sliced = name.split("_")
+        return { label: sliced[0], value: sliced[1] }
+      })
+    focusOptions.value = names
+  }
+
+  async function createSelectOptions(members) {
+    createSeatOptions()
+    createFocusOptions(members)
   }
 
   return {
@@ -248,6 +306,9 @@ export const useCouncilStore = defineStore("council", () => {
     getVoteResults,
     fetchRecentListOfVotes,
     listOfVotesPageSize,
-    listOfVotesSize
+    listOfVotesSize,
+    seatOptions,
+    focusOptions,
+    createFocusOptions
   }
 })

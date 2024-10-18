@@ -83,17 +83,13 @@ const tableData = computed(() => {
 watch(
   () => council.listOfVotesAsOfDate,
   (newValue) => {
-    console.log("new length", newValue.length)
-
     if (!newValue.length) {
-      console.log("if 1")
       // This means the user went back to the current council (or changed the date?)
       pagination.value.page = 1
       pagination.value.pageCount = tableData.value.length / council.listOfVotesPageSize
     }
 
     if (newValue.length) {
-      console.log("if 2")
       // This means the user went for the council as of date
       // Only reset page and pageCount if it's the initial change of the list
       if (newValue.length <= council.listOfVotesSize) {

@@ -8,7 +8,6 @@ import TheModal from "./TheModal.vue"
 import { useI18n } from "vue-i18n"
 const { t } = useI18n()
 
-// Use the council store
 const council = useCouncilStore()
 
 // Council radio button default
@@ -26,7 +25,9 @@ watch(
       council.setAsOfDate(null) // Make sure to reset date in state anyways
       council.resetAsOfDateMembers()
       council.resetAsOfDateListOfVotes()
+      council.createFocusOptions(council.membersCurrent)
       council.getData() // Get current members (probably from state)
+      council.seatOptions.unshift({ label: t("seatSelection.party"), value: "party" })
     }
   }
 )

@@ -6,6 +6,7 @@ import TheCouncilSelection from "../components/TheCouncilSelection.vue"
 import TheVotesTable from "../components/TheVotesTable.vue"
 import TheSeatSelection from "../components/TheSeatSelection.vue"
 import TheMemberFocus from "../components/TheMemberFocus.vue"
+import TheGrandCouncil from "../components/TheGrandCouncil.vue"
 
 const screenSize = useScreenSizeStore()
 const council = useCouncilStore()
@@ -25,7 +26,9 @@ const council = useCouncilStore()
       <n-flex :size="15" :vertical="screenSize.isMobile" :reverse="screenSize.isMobile">
         <div class="parliament-area">
           <n-flex :size="2" vertical>
-            <div class="seat-arrangement">The seat arrangement</div>
+            <div class="seat-arrangement" id="grand-council-basel">
+              <TheGrandCouncil />
+            </div>
             <div class="x-axis-title">The x-axis legend</div>
           </n-flex>
         </div>
@@ -77,10 +80,14 @@ const council = useCouncilStore()
 
 .seat-arrangement-selection {
   flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .seat-feature-selection {
   flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .member-focus-selection {
