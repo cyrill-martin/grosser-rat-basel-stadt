@@ -13,13 +13,6 @@ watch(
     value.value = null
   }
 )
-
-watch(
-  () => value.value,
-  (newValue) => {
-    console.log(newValue)
-  }
-)
 </script>
 
 <template>

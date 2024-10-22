@@ -21,80 +21,6 @@ import { useI18n } from "vue-i18n"
 export const useCouncilStore = defineStore("council", () => {
   const { t } = useI18n()
 
-  // The MAIN function piecing together everything
-  async function getData() {
-    // Set target members
-    const targetMembers = asOfDate.value ? membersAsOfDate : membersCurrent
-
-    // Remember timestamp
-    setLastAsOfTimestamp(asOfTimestamp.value)
-
-    // Only load new data if no current members are available
-    // ...or there's an asOfDate
-    if (!membersCurrent.value || asOfDate.value) {
-      // Show data loading modal
-      setCouncilLoadingState()
-
-      // Check for test data
-      await checkTestData()
-
-      // Fetch the members data
-      currentlyLoading.value = t("modal.currentlyLoading.members")
-      await fetchCouncilMembers()
-      // Map the members data
-      targetMembers.value = await mapCouncilMembers(targetMembers.value, asOfDate.value)
-
-      // Enrich the mapped data ////////////////////////
-      const memberIds = targetMembers.value.map((member) => member.id)
-
-      // Fractions
-      // Get fractions data
-      currentlyLoading.value = t("modal.currentlyLoading.fractions")
-      const fractionsMap = await fetchFractionData(memberIds, asOfDate.value)
-      // Add fractions
-      addFractions(targetMembers.value, fractionsMap)
-
-      // Commissions
-      currentlyLoading.value = t("modal.currentlyLoading.commissions")
-      const commissionsMap = await fetchCommissionData(memberIds, asOfDate.value)
-      addCounts(targetMembers.value, commissionsMap, "nrCommissions")
-
-      // Conflicts of interest
-      if (!asOfDate.value) {
-        // Only for current members
-        currentlyLoading.value = t("modal.currentlyLoading.conflictsOfInterest")
-        const conflictsOfInterestMap = await fetchConflictOfInterestData(memberIds)
-        addCounts(targetMembers.value, conflictsOfInterestMap, "nrConflictsOfInterest")
-      }
-
-      // Impetuses
-      currentlyLoading.value = t("modal.currentlyLoading.impetuses")
-      const impetusesMap = await fetchImpetusData(memberIds, asOfDate.value)
-      addCounts(targetMembers.value, impetusesMap, "nrImpetuses")
-      // End of enriching //////////////////////////////
-
-      // List of votes
-      currentlyLoading.value = t("modal.currentlyLoading.listOfVotes")
-
-      if (asOfDate.value) {
-        // Make sure to reset asOfDate votes if only the date has changed
-        resetAsOfDateListOfVotes()
-      }
-
-      await fetchRecentListOfVotes(listOfVotesSize.value, null)
-
-      // Create content for the seat dropdowns
-      await createSelectOptions(targetMembers.value)
-
-      // Hide the data loading modal
-      setCouncilLoadingState()
-      currentlyLoading.value = null
-    }
-
-    // Set the council title for the visualization
-    await setCouncilTitle()
-  }
-
   // Modal handling
   const isLoading = ref(false) // Show modal or not
   const currentlyLoading = ref(null) // Label of the currently loaded data
@@ -121,6 +47,80 @@ export const useCouncilStore = defineStore("council", () => {
     if (useTestData.value && !membersTestData.value) {
       membersTestData.value = await loadTestData()
     }
+  }
+
+  const abortFetching = ref(0)
+
+  // The MAIN function piecing together everything
+  async function getData() {
+    // Set target members
+    const targetMembers = asOfDate.value ? membersAsOfDate : membersCurrent
+    // Remember timestamp
+    setLastAsOfTimestamp(asOfTimestamp.value)
+    // Only load new data if no current members are available
+    // ...or there's an asOfDate
+    try {
+      if (!membersCurrent.value || asOfDate.value) {
+        // Show data loading modal
+        setCouncilLoadingState()
+        // Check for test data
+        await checkTestData()
+        // Fetch the members data
+        currentlyLoading.value = t("modal.currentlyLoading.members")
+        await fetchCouncilMembers()
+
+        // Map the members data
+        targetMembers.value = await mapCouncilMembers(targetMembers.value, asOfDate.value)
+        // Enrich the mapped data ////////////////////////
+        const memberIds = targetMembers.value.map((member) => member.id)
+        // Fractions
+        // Get fractions data
+        currentlyLoading.value = t("modal.currentlyLoading.fractions")
+        const fractionsMap = await fetchFractionData(memberIds, asOfDate.value)
+        // Add fractions
+        addFractions(targetMembers.value, fractionsMap)
+        // Commissions
+        currentlyLoading.value = t("modal.currentlyLoading.commissions")
+        const commissionsMap = await fetchCommissionData(memberIds, asOfDate.value)
+        addCounts(targetMembers.value, commissionsMap, "nrCommissions")
+        // Conflicts of interest
+        if (!asOfDate.value) {
+          // Only for current members
+          currentlyLoading.value = t("modal.currentlyLoading.conflictsOfInterest")
+          const conflictsOfInterestMap = await fetchConflictOfInterestData(memberIds)
+          addCounts(targetMembers.value, conflictsOfInterestMap, "nrConflictsOfInterest")
+        }
+        // Impetuses
+        currentlyLoading.value = t("modal.currentlyLoading.impetuses")
+        const impetusesMap = await fetchImpetusData(memberIds, asOfDate.value)
+        addCounts(targetMembers.value, impetusesMap, "nrImpetuses")
+        // End of enriching //////////////////////////////
+        // List of votes
+        currentlyLoading.value = t("modal.currentlyLoading.listOfVotes")
+        if (asOfDate.value) {
+          // Make sure to reset asOfDate votes if only the date has changed
+          resetAsOfDateListOfVotes()
+        }
+        await fetchRecentListOfVotes(listOfVotesSize.value, null)
+        // Create content for the seat dropdowns (selections and focus)
+        await createSelectOptions(targetMembers.value)
+        // Hide the data loading modal
+        setCouncilLoadingState()
+        currentlyLoading.value = null
+      } else {
+        // Only update the select options if going back to current council
+        await createSelectOptions(targetMembers.value)
+      }
+    } catch (error) {
+      console.log(error)
+      setCouncilLoadingState()
+
+      abortFetching.value += 1
+
+      return
+    }
+    // Set the council title for the visualization
+    await setCouncilTitle()
   }
 
   // The date picker data
@@ -197,7 +197,8 @@ export const useCouncilStore = defineStore("council", () => {
   const listOfVotesPageSize = ref(5) // Number of votes shown per page
 
   // Loaded vote results
-  const loadedVoteResults = ref(new Map()) // Map object to quickly get the vote titles
+  const loadedVoteResultsCurrent = ref(new Map()) // Map object to quickly get the vote titles
+  const loadedVoteResultsAsOfDate = ref(new Map()) // Map object to quickly get the vote titles
 
   function resetAsOfDateListOfVotes() {
     listOfVotesAsOfDate.value = []
@@ -205,37 +206,35 @@ export const useCouncilStore = defineStore("council", () => {
 
   async function fetchRecentListOfVotes(limit, offset) {
     const targetVotes = asOfDate.value ? listOfVotesAsOfDate : listOfVotesCurrent
-
     let fetchedVotes = await fetchListOfVotes(asOfDate.value, limit, offset)
-
     fetchedVotes = await mapVotesData(fetchedVotes)
-
     targetVotes.value = [...targetVotes.value, ...fetchedVotes]
 
-    console.log(asOfDate.value ? "asOfDate votes" : "current votes", targetVotes.value)
+    // console.log(asOfDate.value ? "asOfDate votes" : "current votes", targetVotes.value)
   }
 
   function setloadedVoteResults(voteData) {
-    loadedVoteResults.value.set(voteData.voteNr, voteData)
+    const targetList = asOfDate.value ? loadedVoteResultsAsOfDate : loadedVoteResultsCurrent
+    targetList.value.set(voteData.voteNr, voteData)
+  }
+
+  function resetAsOfDateLoadedVotes() {
+    loadedVoteResultsAsOfDate.value = new Map()
   }
 
   async function getVoteResults(voteData) {
     const targetMembers = asOfDate.value ? membersAsOfDate : membersCurrent
-
     setCouncilLoadingState()
     currentlyLoading.value = t("modal.currentlyLoading.voteResults")
-
     setloadedVoteResults(voteData)
-
     const voteResultsMap = await fetchVoteResults(voteData.voteNr)
     addVoteResults(targetMembers.value, voteData.voteNr, voteResultsMap)
-
     addToSeatOptions(voteData)
-
     setCouncilLoadingState()
   }
 
   // The seat selections
+  // Currently still handled here as the functions are called based on fetching council data
   const seatOptions = ref(null)
   const focusOptions = ref(null)
 
@@ -254,18 +253,50 @@ export const useCouncilStore = defineStore("council", () => {
     ]
 
     if (!asOfDate.value) {
+      // Add "party" if it's the current council
       values.unshift("party")
     }
 
-    const options = values.map((value) => {
+    let options = values.map((value) => {
       return { label: t(`seatSelection.${value}`), value }
     })
+
+    if (!asOfDate.value && loadedVoteResultsCurrent.value.size !== 0) {
+      let voteOptions = []
+      loadedVoteResultsCurrent.value.forEach((value, key) => {
+        voteOptions.push({ label: value.voteTitle, value: key })
+      })
+
+      options = [
+        ...options,
+        {
+          type: "group",
+          label: t("votesTable.label"),
+          key: "votes",
+          children: voteOptions
+        }
+      ]
+    }
 
     seatOptions.value = options
   }
 
   function addToSeatOptions(voteData) {
-    seatOptions.value.push({
+    if (seatOptions.value.at(-1).type !== "group") {
+      seatOptions.value = [
+        ...seatOptions.value,
+        {
+          type: "group",
+          label: t("votesTable.label"),
+          key: "votes",
+          children: []
+        }
+      ]
+    }
+
+    const group = seatOptions.value.find((element) => element.type === "group")
+
+    group.children.push({
       label: voteData.voteTitle,
       value: voteData.voteNr
     })
@@ -289,13 +320,9 @@ export const useCouncilStore = defineStore("council", () => {
 
   return {
     asOfDate,
-    asOfDateUi,
     setAsOfDate,
     isLoading,
     currentlyLoading,
-    asOfTimestamp,
-    lastAsOfTimestamp,
-    membersCurrent,
     membersAsOfDate,
     title,
     resetAsOfDateMembers,
@@ -309,6 +336,7 @@ export const useCouncilStore = defineStore("council", () => {
     listOfVotesSize,
     seatOptions,
     focusOptions,
-    createFocusOptions
+    resetAsOfDateLoadedVotes,
+    abortFetching
   }
 })

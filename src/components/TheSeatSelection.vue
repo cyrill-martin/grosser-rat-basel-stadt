@@ -15,22 +15,25 @@ const label = computed(() => {
     : t("seatSelection.label.feature")
 })
 
-const value = ref(props.type === "arrangement" ? "fraction" : "party")
+const value = ref(null)
 
 watch(
   () => council.membersAsOfDate,
-  (newValue) => {
-    if (newValue && value.value === "party") {
-      value.value = "fraction"
-    }
+  () => {
+    value.value = null
   }
 )
 </script>
 
 <template>
-  <div v-if="council.seatOptions" class="fixed-width-select">
+  <div v-if="council.seatOptions">
     <label for="{{ props.type }}">{{ label }}</label>
-    <n-select v-model:value="value" :options="council.seatOptions" :id="props.type" />
+    <n-select
+      v-model:value="value"
+      :options="council.seatOptions"
+      :id="props.type"
+      :placeholder="$t('seatSelection.placeholder')"
+    />
   </div>
 </template>
 

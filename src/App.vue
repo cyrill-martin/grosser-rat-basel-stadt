@@ -1,5 +1,5 @@
 <script setup>
-import { NConfigProvider, NFlex } from "naive-ui"
+import { NConfigProvider, NMessageProvider, NFlex } from "naive-ui"
 import { RouterView } from "vue-router"
 import TheHeader from "./components/layout/TheHeader.vue"
 import TheFooter from "./components/layout/TheFooter.vue"
@@ -9,18 +9,20 @@ import { naiveUithemeOverrides } from "./utils/naiveUithemeOverrides.js"
 
 <template>
   <n-config-provider :theme-overrides="naiveUithemeOverrides">
-    <TheUrlHandler />
-    <n-flex vertical :size="0" class="app-container">
-      <header>
-        <TheHeader />
-      </header>
-      <main>
-        <RouterView />
-      </main>
-      <footer>
-        <TheFooter />
-      </footer>
-    </n-flex>
+    <n-message-provider>
+      <TheUrlHandler />
+      <n-flex vertical :size="0" class="app-container">
+        <header>
+          <TheHeader />
+        </header>
+        <main>
+          <RouterView />
+        </main>
+        <footer>
+          <TheFooter />
+        </footer>
+      </n-flex>
+    </n-message-provider>
   </n-config-provider>
 </template>
 

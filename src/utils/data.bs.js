@@ -1,7 +1,7 @@
-const baseUrl = "https://data.bs.ch/api/explore/v2.1/catalog/datasets"
-
 async function fetchFromDataBS(obj) {
   const { dataset, select, where, groupBy, orderBy, limit, offset } = obj
+
+  const baseUrl = "https://data.bs.ch/api/explore/v2.1/catalog/datasets"
 
   let url = `${baseUrl}/${dataset}/records?select=${select}`
 
@@ -13,15 +13,20 @@ async function fetchFromDataBS(obj) {
 
   console.log("GET", url)
 
+  const controller = new AbortController()
+  const timeoutId = setTimeout(() => controller.abort(), 10000)
+
   try {
     const options = {
       method: "GET",
       headers: {
         Accept: "application/json"
-      }
+      },
+      signal: controller.signal // Attach the signal to the fetch options
     }
 
     const response = await fetch(url, options)
+    clearTimeout(timeoutId) // Clear timeout if the fetch completes successfully
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}, ${response.statusText}`)
@@ -29,7 +34,6 @@ async function fetchFromDataBS(obj) {
     return await response.json()
   } catch (error) {
     console.error(error)
-    throw error
   }
 }
 

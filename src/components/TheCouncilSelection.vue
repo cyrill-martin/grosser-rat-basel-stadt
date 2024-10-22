@@ -1,7 +1,16 @@
 <script setup>
-import { NRadioGroup, NRadioButton, NDatePicker, NFlex, NButton, NModal } from "naive-ui"
+import {
+  NRadioGroup,
+  NRadioButton,
+  NDatePicker,
+  NFlex,
+  NButton,
+  NModal,
+  useMessage
+} from "naive-ui"
 import { ref, computed, watch } from "vue"
 import { useCouncilStore } from "../stores/council.js"
+import { noData } from "../utils/message.js"
 import TheModal from "./TheModal.vue"
 
 // Use a handler for i18n
@@ -9,6 +18,8 @@ import { useI18n } from "vue-i18n"
 const { t } = useI18n()
 
 const council = useCouncilStore()
+
+const message = useMessage()
 
 // Council radio button default
 const option = ref("current")
@@ -25,9 +36,8 @@ watch(
       council.setAsOfDate(null) // Make sure to reset date in state anyways
       council.resetAsOfDateMembers()
       council.resetAsOfDateListOfVotes()
-      council.createFocusOptions(council.membersCurrent)
+      council.resetAsOfDateLoadedVotes()
       council.getData() // Get current members (probably from state)
-      council.seatOptions.unshift({ label: t("seatSelection.party"), value: "party" })
     }
   }
 )
@@ -37,6 +47,13 @@ watch(
   () => asOfDate.value,
   () => {
     council.setAsOfDate(asOfDate.value)
+  }
+)
+
+watch(
+  () => council.abortFetching,
+  () => {
+    noData(message, t("message.error"))
   }
 )
 
