@@ -18,9 +18,29 @@ const label = computed(() => {
 const value = ref(null)
 
 watch(
-  () => council.membersAsOfDate,
-  () => {
-    value.value = null
+  () => value.value,
+  (newValue) => {
+    props.type === "arrangement"
+      ? council.setSeatArrangement(newValue)
+      : council.setSeatFeature(newValue)
+  }
+)
+
+watch(
+  () => council.seatArrangement,
+  (newValue) => {
+    if (props.type === "arrangement") {
+      value.value = newValue
+    }
+  }
+)
+
+watch(
+  () => council.seatFeature,
+  (newValue) => {
+    if (props.type !== "arrangement") {
+      value.value = newValue
+    }
   }
 )
 </script>

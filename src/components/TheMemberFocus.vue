@@ -8,6 +8,13 @@ const council = useCouncilStore()
 const value = ref(null)
 
 watch(
+  () => value.value,
+  (newValue) => {
+    council.setMemberFocus(newValue)
+  }
+)
+
+watch(
   () => council.focusOptions,
   () => {
     value.value = null
