@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, watch } from "vue"
+import { onMounted, ref, computed, watch } from "vue"
 import { NSelect } from "naive-ui"
 import { useCouncilStore } from "../stores/council.js"
 import { useI18n } from "vue-i18n"
@@ -8,6 +8,13 @@ const { t } = useI18n()
 const council = useCouncilStore()
 
 const props = defineProps(["type"])
+
+// Lifecycle ///////////////////////////////////////////////////////
+onMounted(() => {
+  props.type === "arrangement"
+    ? (value.value = council.seatArrangement)
+    : (value.value = council.seatFeature)
+})
 
 const label = computed(() => {
   return props.type === "arrangement"
@@ -53,12 +60,14 @@ watch(
       :options="council.seatOptions"
       :id="props.type"
       :placeholder="$t('seatSelection.placeholder')"
+      clearable
     />
   </div>
 </template>
 
 <style scoped>
 label {
+  font-size: 14px;
   font-weight: bold;
 }
 </style>

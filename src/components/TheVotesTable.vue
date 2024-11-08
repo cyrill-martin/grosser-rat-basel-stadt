@@ -129,7 +129,7 @@ async function handlePageChange(pageNr) {
 
 <template>
   <div>
-    <div class="table-title">{{ $t("votesTable.label") }}</div>
+    <!-- <div class="table-title">{{ $t("votesTable.label") }}</div> -->
     <n-data-table
       v-if="tableData"
       size="small"

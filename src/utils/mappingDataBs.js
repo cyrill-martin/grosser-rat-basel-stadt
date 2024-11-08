@@ -44,6 +44,8 @@ export async function mapCouncilMembers(members, asOfDate) {
   const mappedCouncilMembers = members.map((member) => {
     // ID
     const id = member.uni_nr
+    // Focus
+    const focus = false
     // Name
     const name = `${member.vorname} ${member.name}`
 
@@ -85,6 +87,7 @@ export async function mapCouncilMembers(members, asOfDate) {
 
     return {
       id,
+      focus,
       name,
       dateFrom,
       dateTo,
@@ -110,14 +113,14 @@ export async function mapCouncilMembers(members, asOfDate) {
 export async function addFractions(members, fractionsMap) {
   members.forEach((member) => {
     const fraction = fractionsMap.get(member.id)
-    member.fraction = fraction ? fraction : "none"
+    member.fraction = fraction ? fraction : "Fraktionslos"
   })
 }
 
 export async function addCounts(members, mapObject, targetKey) {
   members.forEach((member) => {
     const nr = mapObject.get(member.id)
-    member[targetKey] = nr ? nr : 0
+    member[targetKey] = nr ? parseInt(nr) : 0
   })
 }
 
@@ -152,11 +155,14 @@ export async function addVoteResults(members, voteNr, resultsMap) {
     N: "Nein",
     A: "Nicht abgestimmt",
     E: "Enthalten",
-    P: "Präsidium"
+    P: "Präsidium",
+    0: "Nicht abgestimmt"
   }
 
   members.forEach((member) => {
-    const result = resultsMap.get(member.id)
-    member[voteNr] = result ? results[`${result}`] : "Nicht Ratsmiglied bei Abstimmung"
+    const overallResult = resultsMap.get(member.id)
+    let decision = results[`${overallResult}`]
+    decision = decision ? decision : "Unbekannt"
+    member[voteNr] = overallResult ? decision : "Nicht Ratsmiglied bei Abstimmung"
   })
 }

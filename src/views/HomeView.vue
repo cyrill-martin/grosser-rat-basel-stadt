@@ -7,6 +7,8 @@ import TheVotesTable from "../components/TheVotesTable.vue"
 import TheSeatSelection from "../components/TheSeatSelection.vue"
 import TheMemberFocus from "../components/TheMemberFocus.vue"
 import TheGrandCouncil from "../components/TheGrandCouncil.vue"
+import TheCouncilLegendTitle from "../components/TheCouncilLegendTitle.vue"
+import TheCouncilXAxisTitle from "../components/TheCouncilXAxisTitle.vue"
 
 const screenSize = useScreenSizeStore()
 const council = useCouncilStore()
@@ -29,13 +31,17 @@ const council = useCouncilStore()
             <div class="seat-arrangement" id="grand-council-basel">
               <TheGrandCouncil />
             </div>
-            <div class="x-axis-title">The x-axis legend</div>
+            <div class="x-axis-title">
+              <TheCouncilXAxisTitle />
+            </div>
           </n-flex>
         </div>
         <div class="legend-area">
           <n-flex :size:="2" vertical>
-            <div class="legend-title">The legend title</div>
-            <div class="seat-legend">The legend</div>
+            <div class="legend-title">
+              <TheCouncilLegendTitle />
+            </div>
+            <div class="seat-legend">...</div>
           </n-flex>
         </div>
       </n-flex>
@@ -70,12 +76,20 @@ const council = useCouncilStore()
   font-size: 1.5rem;
   font-weight: bold;
 }
+
 .parliament-area {
   flex: 4;
+  border-radius: 4px;
+}
+
+.x-axis-title {
+  padding-bottom: 0.5rem;
 }
 
 .legend-area {
   flex: 1;
+  border-radius: 4px;
+  padding: 0.5rem;
 }
 
 .seat-arrangement-selection {

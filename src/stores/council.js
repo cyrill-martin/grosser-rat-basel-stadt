@@ -1,4 +1,4 @@
-import { ref } from "vue"
+import { ref, watch } from "vue"
 import { defineStore } from "pinia"
 import {
   fetchMemberData,
@@ -32,6 +32,21 @@ export const useCouncilStore = defineStore("council", () => {
   const seatArrangement = ref(null)
   const seatFeature = ref(null)
   const memberFocus = ref(null)
+
+  watch(
+    () => memberFocus.value,
+    (newValue) => {
+      if (asOfDate.value && membersAsOfDate.value) {
+        membersAsOfDate.value.forEach(
+          (member) => (member.focus = newValue.includes(member.id) ? true : false)
+        )
+      } else {
+        membersCurrent.value.forEach(
+          (member) => (member.focus = newValue.includes(member.id) ? true : false)
+        )
+      }
+    }
+  )
 
   // The date picker data
   const asOfTimestamp = ref(null) // timestamp (ms)
@@ -67,8 +82,22 @@ export const useCouncilStore = defineStore("council", () => {
   const loadedVoteResultsCurrent = ref(new Map()) // Map object to quickly get the vote titles
   const loadedVoteResultsAsOfDate = ref(new Map()) // Map object to quickly get the vote titles
 
+  const numberOfFetches = ref(0)
+  const newFetchingDone = ref(false)
+
+  async function handleCouncilChange(selection) {
+    selection === "arrangement"
+      ? (seatArrangement.value = "fraction")
+      : (seatFeature.value = "fraction")
+  }
+
+  async function resetCurrentMemberFocus() {
+    membersCurrent.value.forEach((member) => (member.focus = false))
+  }
+
   // The MAIN function piecing together everything
   async function getData() {
+    newFetchingDone.value = false
     // Set target members
     const targetMembers = asOfDate.value ? membersAsOfDate : membersCurrent
     // Remember timestamp
@@ -77,8 +106,6 @@ export const useCouncilStore = defineStore("council", () => {
     // ...or there's an asOfDate
     try {
       if (!membersCurrent.value || asOfDate.value) {
-        setSeatArrangement(null)
-        setSeatFeature(null)
         // Show data loading modal
         setCouncilLoadingState()
         // Check for test data
@@ -103,7 +130,7 @@ export const useCouncilStore = defineStore("council", () => {
         addCounts(targetMembers.value, commissionsMap, "nrCommissions")
         // Conflicts of interest
         if (!asOfDate.value) {
-          // Only for current members
+          // Only available for current members
           currentlyLoading.value = t("modal.currentlyLoading.conflictsOfInterest")
           const conflictsOfInterestMap = await fetchConflictOfInterestData(memberIds)
           addCounts(targetMembers.value, conflictsOfInterestMap, "nrConflictsOfInterest")
@@ -126,14 +153,16 @@ export const useCouncilStore = defineStore("council", () => {
         setCouncilLoadingState()
         currentlyLoading.value = null
       } else {
-        setSeatArrangement(null)
-        setSeatFeature(null)
-        // Only update the select options if going back to current council
+        // Update the select options only if going back to current council (data is already there)
         await createSelectOptions(targetMembers.value)
       }
+
+      newFetchingDone.value = true
+      numberOfFetches.value += 1
     } catch (error) {
       console.log(error)
       setCouncilLoadingState()
+      // A watcher keeps track of this number and aborts fetching if needed
       abortFetching.value += 1
       return
     }
@@ -146,22 +175,22 @@ export const useCouncilStore = defineStore("council", () => {
     isLoading.value = !isLoading.value
   }
 
+  function formatDate(timestamp, style) {
+    // Add 2 hours in ms (2 * 60 * 60 * 1000)
+    const cetTimestamp = timestamp + 7200000
+    const cetDate = new Date(cetTimestamp)
+    const year = cetDate.getUTCFullYear()
+    const month = String(cetDate.getUTCMonth() + 1).padStart(2, "0")
+    const day = String(cetDate.getUTCDate()).padStart(2, "0")
+
+    return style === "api" ? `${year}-${month}-${day}` : `${day}.${month}.${year}`
+  }
+
   function setAsOfDate(timestamp) {
     if (timestamp) {
       setAsOfTimestamp(timestamp)
-
-      // Add 2 hours in ms (2 * 60 * 60 * 1000)
-      const cetTimestamp = timestamp + 7200000
-      const cetDate = new Date(cetTimestamp)
-      const year = cetDate.getUTCFullYear()
-      const month = String(cetDate.getUTCMonth() + 1).padStart(2, "0")
-      const day = String(cetDate.getUTCDate()).padStart(2, "0")
-
-      const formattedDate_api = `${year}-${month}-${day}`
-      const formattedDate_ui = `${day}.${month}.${year}`
-
-      asOfDate.value = formattedDate_api
-      asOfDateUi.value = formattedDate_ui
+      asOfDate.value = formatDate(timestamp, "api")
+      asOfDateUi.value = formatDate(timestamp, "ui")
     } else {
       asOfDate.value = null
     }
@@ -204,7 +233,7 @@ export const useCouncilStore = defineStore("council", () => {
     title.value =
       (await asOfDate.value) && membersAsOfDate.value
         ? `${t("home.title.councilAsOfDate")} ${asOfDateUi.value}`
-        : t("home.title.councilCurrent")
+        : `${t("home.title.councilCurrent")} (${formatDate(Date.now(), "ui")})`
   }
 
   function resetAsOfDateListOfVotes() {
@@ -261,21 +290,23 @@ export const useCouncilStore = defineStore("council", () => {
 
   function createSeatOptions() {
     let values = [
+      // "party"
       "fraction",
       "constituency",
-      "daysInCouncil",
-      "nrCommissions",
-      "nrConflictsOfInterest",
-      "nrImpetuses",
       "gender",
       "age",
       "ageGroup",
-      "occupation"
+      "occupation",
+      "daysInCouncil",
+      "nrCommissions",
+      "nrImpetuses"
+      // "nrConflictsOfInterest",
     ]
 
     if (!asOfDate.value) {
-      // Add "party" if it's the current council
+      // If current council
       values.unshift("party")
+      values.push("nrConflictsOfInterest")
     }
 
     let options = values.map((value) => {
@@ -345,6 +376,7 @@ export const useCouncilStore = defineStore("council", () => {
     isLoading,
     currentlyLoading,
     membersAsOfDate,
+    membersCurrent,
     title,
     resetAsOfDateMembers,
     resetAsOfDateListOfVotes,
@@ -364,6 +396,12 @@ export const useCouncilStore = defineStore("council", () => {
     memberFocus,
     setSeatArrangement,
     setSeatFeature,
-    setMemberFocus
+    setMemberFocus,
+    loadedVoteResultsCurrent,
+    loadedVoteResultsAsOfDate,
+    newFetchingDone,
+    numberOfFetches,
+    handleCouncilChange,
+    resetCurrentMemberFocus
   }
 })

@@ -1,7 +1,8 @@
 /* Semantic color variables for this project */
 :root {
-  --color-background: #ffffff;
-  --color-text: #333447;
+  /* --color-background: #ffffff; */
+  --color-background: #f7f7f7;
+  --color-text: #33302e;
 }
 
 body {

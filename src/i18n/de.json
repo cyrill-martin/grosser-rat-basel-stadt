@@ -23,10 +23,10 @@
   "memberFocusSelection.label": "Fokus",
   "memberFocusSelection.placeholder": "Ratsmitglied auswählen",
   "votesTable.label": "Schlussabstimmungen",
-  "votesTable.header.column1": "Geschäft",
+  "votesTable.header.column1": "Schlussabstimmungen",
   "votesTable.tooltip.importResults": "Zu'Sitzverteilung' und 'Merkmal' hinzufügen",
   "votesTable.tooltip.resultsImported": "Hinzugefügt",
-  "seatSelection.daysInCouncil": "Anzahl Tage im Amt",
+  "seatSelection.daysInCouncil": "Anzahl ununterbrochene Tage im Amt",
   "seatSelection.gender": "Geschlecht",
   "seatSelection.age": "Alter",
   "seatSelection.ageGroup": "Altersgruppe",
@@ -36,5 +36,5 @@
   "seatSelection.fraction": "Fraktion",
   "seatSelection.nrCommissions": "Anzahl Kommissionen",
   "seatSelection.nrConflictsOfInterest": "Anzahl Interessensbindungen",
-  "seatSelection.nrImpetuses": "Anzahl parlamentarische Vorstösse"
+  "seatSelection.nrImpetuses": "Anzahl Vorstösse (während allen bisherigen Amtszeiten)"
 }

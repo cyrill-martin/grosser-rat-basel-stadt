@@ -77,8 +77,11 @@ export async function fetchFractionData(memberIds, asOfDate) {
     moreFractions = await fetchFromDataBS(obj)
   }
 
-  const combinedFractions = [...fractions.results, ...moreFractions.results]
-  return new Map(combinedFractions.map((item) => [item.uni_nr_adr, item.kurzname_gre]))
+  const finalFractions = moreFractions
+    ? [...fractions.results, ...moreFractions.results]
+    : [...fractions.results]
+
+  return new Map(finalFractions.map((item) => [item.uni_nr_adr, item.kurzname_gre]))
 }
 
 export async function fetchCommissionData(memberIds, asOfDate) {
