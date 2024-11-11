@@ -7,8 +7,9 @@ export const customColorScale = {
 }
 
 export const ordinalColors = d3.schemeObservable10
-export const focusColors = d3.schemeTableau10
-export const focusOpacity = 0.4
+export const focusColors = d3.schemeObservable10
+
+export const focusOpacity = 0.5
 
 export const customColors = {
   party: {

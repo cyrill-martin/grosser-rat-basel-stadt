@@ -74,7 +74,7 @@ const council = useCouncilStore()
 .council-title {
   margin-top: 2rem;
   font-size: 1.5rem;
-  font-weight: bold;
+  font-weight: 500;
 }
 
 .parliament-area {

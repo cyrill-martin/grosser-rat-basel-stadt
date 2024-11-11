@@ -40,9 +40,11 @@ const ctr = ref(null)
 const vizDimensions = ref({
   width: null,
   height: null,
+  heightBig: null,
   margin: { top: 50, right: 25, bottom: 25, left: 25 },
   ctrWidth: null,
-  ctrHeight: null
+  ctrHeight: null,
+  ctrHeightBig: null
 })
 
 // The actual council members
@@ -114,7 +116,15 @@ watch(
 
 watch(
   () => seatArrangement.value,
-  () => {
+  async (newValue, oldValue) => {
+    if (newValue === "occupation") {
+      await updateSvg("increased")
+      rotateViz("occupation")
+    }
+    if (oldValue === "occupation") {
+      await updateSvg("regular")
+      rotateViz("regular")
+    }
     sortMembers()
   }
 )
@@ -176,34 +186,42 @@ async function initiateSvg() {
     )
 }
 
+// function getLengthOfLongestOccupation() {
+//   let nrOfCharacters = 0
+//   members.value.forEach((member) => {
+//     const occupationLength = member.occupation.length
+//     nrOfCharacters = occupationLength > nrOfCharacters ? occupationLength : nrOfCharacters
+//   })
+//   return nrOfCharacters
+// }
+
+async function updateSvg(direction) {
+  let height = direction === "increased" ? xSpacing.value * 100 * 1.1 : vizDimensions.value.height
+
+  svg.value
+    .transition()
+    .duration(2000)
+    .attr("viewBox", `0 0 ${vizDimensions.value.width} ${height}`)
+}
+
 async function setVizDimensions(element) {
   vizDimensions.value.width = element.node().getBoundingClientRect().width
+
   vizDimensions.value.height = vizDimensions.value.width * 0.3
+
   vizDimensions.value.ctrWidth =
     vizDimensions.value.width - vizDimensions.value.margin.left - vizDimensions.value.margin.right
+
   vizDimensions.value.ctrHeight =
     vizDimensions.value.height - vizDimensions.value.margin.top - vizDimensions.value.margin.bottom
 }
 
-async function handleCriticalSelections() {
-  const criticalSelections = ["party", "nrConflictsOfInterest"]
-  if (!council.membersAsOfDate) return
-  const checkAndHandleChange = async (type, value) => {
-    if (
-      criticalSelections.includes(value) ||
-      (isNumericValue(value) && value !== "" && value !== null)
-    ) {
-      await council.handleCouncilChange(type)
-    }
-  }
-  await checkAndHandleChange("arrangement", seatArrangement.value)
-  await checkAndHandleChange("feature", seatFeature.value)
-}
-
 // Sort the members for the visualization
 async function sortMembers() {
-  // Make sure to check selections
-  await handleCriticalSelections()
+  // Make sure to handle selections
+  // if (isFetchingAsOfDateCouncil()) {
+  //   await handleCriticalSelections()
+  // }
 
   // Sorting
   await members.value.sort((a, b) => {
@@ -248,6 +266,12 @@ async function sortMembers() {
   // Handle the visualization
   await setColorScale()
   await drawSeatArrangement(members.value)
+
+  if (seatArrangement.value === "occupation") {
+    rotateViz("occupation")
+  } else {
+    rotateViz("regular")
+  }
 }
 
 // Creating the x-axis
@@ -353,6 +377,26 @@ function formatxAxis() {
         .style("stroke-dasharray", "4,2")
 }
 
+async function rotateViz(type) {
+  const svgDegree = type === "occupation" ? "270" : "0"
+
+  svg.value.attr("transform", `rotate(${svgDegree})`)
+
+  if (type === "occupation") {
+    // Rotate axis tick labels
+    xAxis.value
+      .selectAll("text")
+      .transition()
+      .duration(2500)
+      .style("text-anchor", "start")
+      .attr("dy", ".02rem")
+      .attr("dx", () => {
+        return -vizDimensions.value.ctrHeight + maxGroupMembers.value * seatRadius.value * 2
+      })
+      .attr("transform", "rotate(90)")
+  }
+}
+
 const maxGroupMembers = ref(0)
 const maxSeatsPerRow = 20
 
@@ -437,9 +481,12 @@ function bandXAccessor(d) {
 
 function bandYAccessor(d) {
   const yIdx = Math.floor(d.innerIndex / maxSeatsPerGroupRow.value)
-  return xDomain.value[0] === ""
-    ? yIdx * ySpacing.value + ySpacing.value / 2
-    : yIdx * ySpacing.value
+  if (seatArrangement.value !== "occupation") {
+    return xDomain.value[0] === ""
+      ? yIdx * ySpacing.value + ySpacing.value / 2
+      : yIdx * ySpacing.value
+  }
+  return yIdx * seatRadius.value * 2
 }
 
 function linearXAccessor(d) {
@@ -530,7 +577,7 @@ function focusColorAccessor(d) {
   const index = council.focusOptions.findIndex((opt) => {
     return opt.value === d.id
   })
-  return focusColors[index % 10]
+  return focusColors[index % focusColors.length]
 }
 
 async function drawSeatArrangement(data) {
@@ -595,6 +642,7 @@ async function drawSeatArrangement(data) {
     .attr("stroke", (d) => (d.focus ? focusColorAccessor(d) : null))
     .attr("stroke-width", (d) => (d.focus ? seatRadius.value * 2 : null))
     .attr("stroke-opacity", (d) => (d.focus ? focusOpacity : null))
+    .attr("cursor", "pointer")
 
   d3.select(".seats-group").raise()
 }

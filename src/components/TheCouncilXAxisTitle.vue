@@ -37,6 +37,6 @@ function isNumericKey(key) {
 <style scoped>
 .x-axis-title {
   text-align: center;
-  font-weight: bold;
+  font-weight: 500;
 }
 </style>

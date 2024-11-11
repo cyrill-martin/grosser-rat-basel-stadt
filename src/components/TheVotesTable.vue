@@ -129,7 +129,6 @@ async function handlePageChange(pageNr) {
 
 <template>
   <div>
-    <!-- <div class="table-title">{{ $t("votesTable.label") }}</div> -->
     <n-data-table
       v-if="tableData"
       size="small"
@@ -147,11 +146,6 @@ async function handlePageChange(pageNr) {
 </template>
 
 <style scoped>
-.table-title {
-  font-weight: bold;
-  margin-bottom: 0.5rem;
-}
-
 .n-data-table :deep(.n-data-table__pagination) {
   justify-content: center !important;
 }

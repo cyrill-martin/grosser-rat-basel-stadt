@@ -1,3 +1,5 @@
+import { formatDate } from "./formatDate.js"
+
 async function fetchFromDataBS(obj) {
   const { dataset, select, where, groupBy, orderBy, limit, offset } = obj
 
@@ -11,7 +13,7 @@ async function fetchFromDataBS(obj) {
   if (limit) url += `&limit=${limit}`
   if (offset) url += `&offset=${offset}`
 
-  console.log("GET", url)
+  console.log(`GET - ${dataset}`, url)
 
   const controller = new AbortController()
   const timeoutId = setTimeout(() => controller.abort(), 10000)
@@ -51,16 +53,20 @@ export async function fetchMemberData(asOfDate) {
   }
 
   const members = await fetchFromDataBS(obj)
+
   return members.results
 }
 
 export async function fetchFractionData(memberIds, asOfDate) {
   const joinedMembers = memberIds.map((item) => `'${item}'`).join(",")
+
   const asOfDateWhere = encodeURIComponent(
     `uni_nr_adr IN (${joinedMembers}) AND beginn_mit <= '${asOfDate}' AND (ende_mit >= '${asOfDate}' OR ende_mit IS NULL) AND gremientyp="Fraktion"`
   )
+
+  // Problem: if current members are voted out of council, they already have an ende_mit data!!
   const currentWhere = encodeURIComponent(
-    `uni_nr_adr IN (${joinedMembers}) AND ende_mit IS NULL AND gremientyp="Fraktion"`
+    `uni_nr_adr IN (${joinedMembers}) AND gremientyp="Fraktion" AND (ende_mit IS NULL OR ende_mit >= ${formatDate(Date.now(), "api")})` // AND ende_mit IS NULL
   )
 
   let obj = {
@@ -69,7 +75,9 @@ export async function fetchFractionData(memberIds, asOfDate) {
     where: asOfDate ? asOfDateWhere : currentWhere,
     limit: "100"
   }
+
   let fractions = await fetchFromDataBS(obj)
+
   let moreFractions
 
   if (fractions.total_count > 100) {

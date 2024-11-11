@@ -27,7 +27,7 @@ import { NFlex } from "naive-ui"
   text-decoration: none;
   color: inherit;
   font-size: 2rem;
-  font-weight: bold;
+  font-weight: 800;
 }
 
 .navigation {
