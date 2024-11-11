@@ -8,7 +8,7 @@ import {
   NModal,
   useMessage
 } from "naive-ui"
-import { ref, computed, watch } from "vue"
+import { onMounted, ref, computed, watch } from "vue"
 import { useCouncilStore } from "../stores/council.js"
 import { noData } from "../utils/message.js"
 import TheModal from "./TheModal.vue"
@@ -20,6 +20,12 @@ const { t } = useI18n()
 const council = useCouncilStore()
 
 const message = useMessage()
+
+// Lifecycle ///////////////////////////////////////////////////////
+onMounted(() => {
+  option.value = council.membersAsOfDate ? "asOfDate" : "current"
+  asOfDate.value = council.asOfDate
+})
 
 // Council radio button default
 const option = ref("current")
