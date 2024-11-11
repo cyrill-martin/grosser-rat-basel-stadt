@@ -43,7 +43,8 @@ watch(
       council.resetAsOfDateMembers()
       council.resetAsOfDateListOfVotes()
       council.resetAsOfDateLoadedVotes()
-      council.resetCurrentMemberFocus()
+      council.resetCurrentlyFocusedMembers()
+      council.resetSelectedVotes()
       council.getData() // Get current members (probably from state)
     }
   }

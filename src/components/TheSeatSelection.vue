@@ -68,6 +68,6 @@ watch(
 <style scoped>
 label {
   font-size: 14px;
-  font-weight: bold;
+  font-weight: 500;
 }
 </style>

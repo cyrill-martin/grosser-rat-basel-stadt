@@ -22,16 +22,22 @@ watch(
 )
 
 watch(
+  () => council.memberFocus,
+  (newValue) => {
+    value.value = newValue
+  }
+)
+
+// Make sure to reset any focus when the options change due to a change of the shown council
+watch(
   () => council.focusOptions,
-  (newValue, oldValue) => {
-    if (oldValue) {
-      value.value.length = 0
-    }
+  () => {
+    council.memberFocus ? (council.memberFocus.length = 0) : null
   }
 )
 
 function colorAccessor(index) {
-  const rgb = d3.color(focusColors[index % 10])
+  const rgb = d3.color(focusColors[index % focusColors.length])
   return `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${focusOpacity})`
 }
 
@@ -76,6 +82,6 @@ function renderTag({ option, handleClose }) {
 <style scoped>
 label {
   font-size: 14px;
-  font-weight: bold;
+  font-weight: 500;
 }
 </style>

@@ -36,6 +36,6 @@ function isNumericKey(key) {
 
 <style scoped>
 .legend-title {
-  font-weight: bold;
+  font-weight: 500;
 }
 </style>
