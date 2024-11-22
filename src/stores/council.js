@@ -62,7 +62,7 @@ export const useCouncilStore = defineStore("council", () => {
   const currentlyLoading = ref(null) // Label of the currently loaded data
 
   // Use of testdata
-  const useTestData = ref(true) // <==== TEST DATA BOOLEAN
+  const useTestData = ref(false) // <==== TEST DATA BOOLEAN
   const membersTestData = ref(null)
 
   // Abort data fetching from data.bs.ch
