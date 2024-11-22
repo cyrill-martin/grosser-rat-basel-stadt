@@ -61,10 +61,6 @@ export const useCouncilStore = defineStore("council", () => {
   const isLoading = ref(false) // Show modal or not
   const currentlyLoading = ref(null) // Label of the currently loaded data
 
-  // Use of testdata
-  const useTestData = ref(false) // <==== TEST DATA BOOLEAN
-  const membersTestData = ref(null)
-
   // Abort data fetching from data.bs.ch
   const abortFetching = ref(0)
 
@@ -140,8 +136,6 @@ export const useCouncilStore = defineStore("council", () => {
       if (!membersCurrent.value || asOfDate.value) {
         // Show data loading modal
         setCouncilLoadingState()
-        // Check for test data
-        await checkTestData()
 
         // Fetch the members data
         currentlyLoading.value = t("modal.currentlyLoading.members")
@@ -208,17 +202,6 @@ export const useCouncilStore = defineStore("council", () => {
     isLoading.value = !isLoading.value
   }
 
-  // function formatDate(timestamp, style) {
-  //   // Add 2 hours in ms (2 * 60 * 60 * 1000)
-  //   const cetTimestamp = timestamp + 7200000
-  //   const cetDate = new Date(cetTimestamp)
-  //   const year = cetDate.getUTCFullYear()
-  //   const month = String(cetDate.getUTCMonth() + 1).padStart(2, "0")
-  //   const day = String(cetDate.getUTCDate()).padStart(2, "0")
-
-  //   return style === "api" ? `${year}-${month}-${day}` : `${day}.${month}.${year}`
-  // }
-
   function setAsOfDate(timestamp) {
     if (timestamp) {
       setAsOfTimestamp(timestamp)
@@ -274,32 +257,12 @@ export const useCouncilStore = defineStore("council", () => {
   }
 
   // Methods //////////////////////////////////////////////////////////
-  async function loadTestData() {
-    try {
-      const data = await import("../utils/testData.json")
-      return data.default.results
-    } catch (error) {
-      console.error("Error loading test data:", error)
-    }
-  }
-
-  async function checkTestData() {
-    // Load test data if not already done
-    if (useTestData.value && !membersTestData.value) {
-      membersTestData.value = await loadTestData()
-    }
-  }
-
   async function fetchCouncilMembers() {
     if (asOfDate.value) {
       // Fetch asOfDate council if date is given
       membersAsOfDate.value = await fetchMemberData(asOfDate.value)
     } else if (!asOfDate.value && !membersCurrent.value) {
-      // Fetch current council data or test data if no date is given
-      // and current members have not been fetched already
-      useTestData.value
-        ? (membersCurrent.value = membersTestData.value)
-        : (membersCurrent.value = await fetchMemberData(null))
+      membersCurrent.value = await fetchMemberData(null)
     }
   }
 
