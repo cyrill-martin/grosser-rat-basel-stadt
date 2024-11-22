@@ -248,8 +248,8 @@ function bandColorAccessor(value, i) {
   return ordinalColors[i % ordinalColors.length]
 }
 
-const legendItemSpacing = 25
-const legendItemRadius = (legendItemSpacing / 2) * 0.8
+const legendItemSpacing = 20
+const legendItemRadius = (legendItemSpacing / 2) * 0.75
 
 async function drawBandLegend(domain) {
   let legendGroup = ctr.value.select("#legend-group")

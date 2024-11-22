@@ -62,7 +62,7 @@ export const useCouncilStore = defineStore("council", () => {
   const currentlyLoading = ref(null) // Label of the currently loaded data
 
   // Use of testdata
-  const useTestData = ref(false) // <==== TEST DATA BOOLEAN
+  const useTestData = ref(true) // <==== TEST DATA BOOLEAN
   const membersTestData = ref(null)
 
   // Abort data fetching from data.bs.ch
@@ -104,7 +104,7 @@ export const useCouncilStore = defineStore("council", () => {
     const checkAndHandleChange = async (type, value) => {
       if (
         criticalSelections.includes(value) ||
-        (Number.isInteger(Number(value)) && value !== "" && value !== null)
+        (Number.isInteger(Number(value)) && value !== null)
       ) {
         await handleCouncilChange(type)
       }
@@ -114,8 +114,13 @@ export const useCouncilStore = defineStore("council", () => {
   }
 
   function resetSelectedVotes() {
-    if (Number.isInteger(Number(seatArrangement.value))) handleCouncilChange("arrangement")
-    if (Number.isInteger(Number(seatFeature.value))) handleCouncilChange("feature")
+    if (Number.isInteger(Number(seatArrangement.value)) && seatArrangement.value !== null) {
+      handleCouncilChange("arrangement")
+    }
+
+    if (Number.isInteger(Number(seatFeature.value)) && seatFeature.value !== null) {
+      handleCouncilChange("feature")
+    }
   }
 
   // The MAIN function piecing together everything
