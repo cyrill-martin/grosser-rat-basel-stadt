@@ -21,7 +21,7 @@
   "seatSelection.label.arrangement": "Sitzverteilung",
   "seatSelection.label.feature": "Merkmal",
   "memberFocusSelection.label": "Fokus",
-  "memberFocusSelection.placeholder": "Ratsmitglied auswählen",
+  "memberFocusSelection.placeholder": "Ratsmitglied suchen oder auswählen",
   "votesTable.label": "Schlussabstimmungen",
   "votesTable.header.column1": "Schlussabstimmungen",
   "votesTable.tooltip.importResults": "Zu'Sitzverteilung' und 'Merkmal' hinzufügen",

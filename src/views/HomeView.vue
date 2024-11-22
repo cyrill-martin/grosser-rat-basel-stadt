@@ -7,8 +7,9 @@ import TheVotesTable from "../components/TheVotesTable.vue"
 import TheSeatSelection from "../components/TheSeatSelection.vue"
 import TheMemberFocus from "../components/TheMemberFocus.vue"
 import TheGrandCouncil from "../components/TheGrandCouncil.vue"
-import TheCouncilLegendTitle from "../components/TheCouncilLegendTitle.vue"
-import TheCouncilXAxisTitle from "../components/TheCouncilXAxisTitle.vue"
+import TheLegendTitle from "../components/TheLegendTitle.vue"
+import TheXAxisTitle from "../components/TheXAxisTitle.vue"
+import TheLegend from "../components/TheLegend.vue"
 
 const screenSize = useScreenSizeStore()
 const council = useCouncilStore()
@@ -25,6 +26,14 @@ const council = useCouncilStore()
       {{ council.title }}
     </div>
     <div class="parliament-visualization">
+      <div class="legend-title-area">
+        <n-flex :size="15">
+          <div class="legend-title-buffer"></div>
+          <div class="legend-title">
+            <TheLegendTitle />
+          </div>
+        </n-flex>
+      </div>
       <n-flex :size="15" :vertical="screenSize.isMobile" :reverse="screenSize.isMobile">
         <div class="parliament-area">
           <n-flex :size="2" vertical>
@@ -32,16 +41,15 @@ const council = useCouncilStore()
               <TheGrandCouncil />
             </div>
             <div class="x-axis-title">
-              <TheCouncilXAxisTitle />
+              <TheXAxisTitle />
             </div>
           </n-flex>
         </div>
         <div class="legend-area">
           <n-flex :size:="2" vertical>
-            <div class="legend-title">
-              <TheCouncilLegendTitle />
+            <div class="seat-legend" id="grand-council-basel-legend">
+              <TheLegend />
             </div>
-            <div class="seat-legend">...</div>
           </n-flex>
         </div>
       </n-flex>
@@ -83,13 +91,33 @@ const council = useCouncilStore()
 }
 
 .x-axis-title {
-  padding-bottom: 0.5rem;
+  text-align: center;
+  font-weight: 500;
+  font-size: 16px;
 }
 
 .legend-area {
   flex: 1;
   border-radius: 4px;
-  padding: 0.5rem;
+}
+
+.legend-title-area {
+  flex: 1;
+}
+
+.legend-title-buffer {
+  flex: 4;
+}
+
+.legend-title {
+  flex: 1;
+  font-weight: 500;
+  font-size: 16px;
+  min-height: 24px;
+}
+
+.seat-legend {
+  flex-grow: 1;
 }
 
 .seat-arrangement-selection {

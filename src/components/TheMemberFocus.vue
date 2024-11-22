@@ -73,8 +73,9 @@ function renderTag({ option, handleClose }) {
       :options="council.focusOptions"
       id="member-focus"
       multiple
-      :max-tag-count="10"
+      :max-tag-count="12"
       :render-tag="renderTag"
+      filterable
     />
   </div>
 </template>

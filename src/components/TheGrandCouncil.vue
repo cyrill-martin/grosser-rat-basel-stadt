@@ -27,6 +27,8 @@ const council = useCouncilStore()
 
 // Lifecycle ///////////////////////////////////////////////////////
 onMounted(() => {
+  tooltip.value = d3.select("#tooltip")
+
   drawViz()
   if (council.numberOfFetches > 0) {
     sortMembers()
@@ -40,11 +42,9 @@ const ctr = ref(null)
 const vizDimensions = ref({
   width: null,
   height: null,
-  heightBig: null,
   margin: { top: 50, right: 25, bottom: 25, left: 25 },
   ctrWidth: null,
-  ctrHeight: null,
-  ctrHeightBig: null
+  ctrHeight: null
 })
 
 // The actual council members
@@ -117,15 +117,13 @@ watch(
 watch(
   () => seatArrangement.value,
   async (newValue, oldValue) => {
+    await sortMembers()
     if (newValue === "occupation") {
-      await updateSvg("increased")
-      rotateViz("occupation")
+      await updateAndRotateViz("increased")
     }
     if (oldValue === "occupation") {
-      await updateSvg("regular")
-      rotateViz("regular")
+      await updateAndRotateViz("regular")
     }
-    sortMembers()
   }
 )
 
@@ -186,22 +184,31 @@ async function initiateSvg() {
     )
 }
 
-// function getLengthOfLongestOccupation() {
-//   let nrOfCharacters = 0
-//   members.value.forEach((member) => {
-//     const occupationLength = member.occupation.length
-//     nrOfCharacters = occupationLength > nrOfCharacters ? occupationLength : nrOfCharacters
-//   })
-//   return nrOfCharacters
-// }
+async function updateAndRotateViz(direction) {
+  const height = direction === "increased" ? xSpacing.value * 100 * 1.1 : vizDimensions.value.height
+  const svgDegree = direction === "increased" ? "270" : "0"
 
-async function updateSvg(direction) {
-  let height = direction === "increased" ? xSpacing.value * 100 * 1.1 : vizDimensions.value.height
-
-  svg.value
+  await svg.value
     .transition()
     .duration(2000)
     .attr("viewBox", `0 0 ${vizDimensions.value.width} ${height}`)
+    .attr("transform", `rotate(${svgDegree})`)
+    .end()
+
+  if (direction === "increased") {
+    // Rotate axis tick labels
+    await xAxis.value
+      .selectAll("text")
+      .transition()
+      .duration(1000)
+      .style("text-anchor", "start")
+      .attr("dy", ".02rem")
+      .attr("dx", () => {
+        return -vizDimensions.value.ctrHeight + maxGroupMembers.value * seatRadius.value * 2
+      })
+      .attr("transform", "rotate(90)")
+      .end()
+  }
 }
 
 async function setVizDimensions(element) {
@@ -218,11 +225,6 @@ async function setVizDimensions(element) {
 
 // Sort the members for the visualization
 async function sortMembers() {
-  // Make sure to handle selections
-  // if (isFetchingAsOfDateCouncil()) {
-  //   await handleCriticalSelections()
-  // }
-
   // Sorting
   await members.value.sort((a, b) => {
     if (seatArrangement.value) {
@@ -266,12 +268,6 @@ async function sortMembers() {
   // Handle the visualization
   await setColorScale()
   await drawSeatArrangement(members.value)
-
-  if (seatArrangement.value === "occupation") {
-    rotateViz("occupation")
-  } else {
-    rotateViz("regular")
-  }
 }
 
 // Creating the x-axis
@@ -313,7 +309,7 @@ async function drawXaxis() {
     .append("g")
     .attr("id", "x-axis")
     .attr("transform", `translate(0, ${vizDimensions.value.ctrHeight})`)
-    .style("font-size", "0.8rem")
+    .style("font-size", "14px")
 
   formatxAxis()
 }
@@ -375,26 +371,6 @@ function formatxAxis() {
         .selectAll(".tick line")
         .style("stroke", "lightgrey")
         .style("stroke-dasharray", "4,2")
-}
-
-async function rotateViz(type) {
-  const svgDegree = type === "occupation" ? "270" : "0"
-
-  svg.value.attr("transform", `rotate(${svgDegree})`)
-
-  if (type === "occupation") {
-    // Rotate axis tick labels
-    xAxis.value
-      .selectAll("text")
-      .transition()
-      .duration(2500)
-      .style("text-anchor", "start")
-      .attr("dy", ".02rem")
-      .attr("dx", () => {
-        return -vizDimensions.value.ctrHeight + maxGroupMembers.value * seatRadius.value * 2
-      })
-      .attr("transform", "rotate(90)")
-  }
 }
 
 const maxGroupMembers = ref(0)
@@ -573,6 +549,8 @@ function colorAccessor(d) {
   return colorScale.value(d[seatFeature.value])
 }
 
+const tooltip = ref(null)
+
 function focusColorAccessor(d) {
   const index = council.focusOptions.findIndex((opt) => {
     return opt.value === d.id
@@ -624,6 +602,10 @@ async function drawSeatArrangement(data) {
     .on("click", (_, d) => {
       window.open(d.url, "_blank")
     })
+    .on("mouseover", (_, d) => addMouseover(d))
+    .on("mousemove", (event) => handleMouseMove(event))
+    .on("mouseout", () => resetTooltip())
+    .on("contextmenu", (event, d) => handleRighClick(event, d))
     .transition(enterTransition)
     .attr("cx", (d) => xAccessor(d))
     .attr("cy", (d) => yAccessor(d))
@@ -646,8 +628,82 @@ async function drawSeatArrangement(data) {
 
   d3.select(".seats-group").raise()
 }
+
+function addMouseover(d) {
+  if (!council.membersAsOfDate) {
+    tooltip.value.select(".headshot img").attr("src", d.image)
+  }
+  tooltip.value.select(".name").text(d.name)
+  if (seatArrangement.value === seatFeature.value) {
+    tooltip.value.select(".arrangement").text(d[seatArrangement.value])
+  } else {
+    tooltip.value.select(".arrangement").text(d[seatArrangement.value])
+    tooltip.value.select(".feature").text(d[seatFeature.value])
+  }
+  tooltip.value.style("visibility", "visible")
+}
+
+function handleMouseMove(event) {
+  tooltip.value
+    .style("left", `${event.clientX + seatRadius.value}px`)
+    .style("top", `${event.clientY - seatRadius.value}px`)
+}
+
+function resetTooltip() {
+  if (!council.membersAsOfDate) {
+    tooltip.value.select(".headshot img").attr("src", null)
+  }
+  tooltip.value.select(".name").text(null)
+  tooltip.value.select(".arrangement").text(null)
+  tooltip.value.select(".feature").text(null)
+
+  tooltip.value.style("visibility", "hidden")
+}
+
+function handleRighClick(event, d) {
+  event.preventDefault()
+
+  if (council.memberFocus) {
+    if (!memberFocus.value.includes(d.id)) {
+      council.setMemberFocus([...memberFocus.value, d.id])
+    }
+  } else {
+    council.setMemberFocus([d.id])
+  }
+}
 </script>
 
 <template>
-  <div></div>
+  <div id="tooltip">
+    <div v-if="!council.membersAsOfDate" class="headshot"><img /></div>
+    <div class="name"></div>
+    <div class="arrangement"></div>
+    <div class="feature"></div>
+  </div>
 </template>
+
+<style scoped>
+#tooltip {
+  text-align: center;
+  visibility: hidden;
+  position: fixed;
+  z-index: 10;
+  background-color: rgba(247, 247, 247, 0.85);
+  border-radius: 4px;
+  padding: 5px;
+  font-size: 14px;
+}
+
+.name {
+  font-weight: 800;
+}
+
+img {
+  border-radius: 50%;
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  filter: grayscale(100%);
+  background-color: #dddddd;
+}
+</style>
