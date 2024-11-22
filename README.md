@@ -22,10 +22,18 @@ npm install
 npm run dev
 ```
 
-### Compile and Minify for Production
+### Compile, Minify, and Deploy to GitHub Page
+
+#### Testing Stage
 
 ```sh
-npm run build
+npm run deploy:test
+```
+
+#### Productive Stage
+
+```sh
+npm run deploy:prod
 ```
 
 ### Lint with [ESLint](https://eslint.org/)
