@@ -10,7 +10,7 @@ The component listens to the user selections and updates the drawn members accor
 */
 
 import { ref, computed, onMounted, watch } from "vue"
-// import { useScreenSizeStore } from "../stores/screenSize.js"
+import { useScreenSizeStore } from "../stores/screenSize.js"
 import * as d3 from "d3"
 import { useCouncilStore } from "../stores/council.js"
 import {
@@ -21,9 +21,8 @@ import {
   focusOpacity
 } from "../utils/customColors.js"
 
+const screenSize = useScreenSizeStore()
 const council = useCouncilStore()
-
-// const screenSize = useScreenSizeStore()
 
 // Lifecycle ///////////////////////////////////////////////////////
 onMounted(() => {
@@ -42,7 +41,12 @@ const ctr = ref(null)
 const vizDimensions = ref({
   width: null,
   height: null,
-  margin: { top: 50, right: 25, bottom: 25, left: 25 },
+  margin: {
+    top: null,
+    right: null,
+    bottom: null,
+    left: null
+  },
   ctrWidth: null,
   ctrHeight: null
 })
@@ -202,6 +206,7 @@ async function updateAndRotateViz(direction) {
       .transition()
       .duration(1000)
       .style("text-anchor", "start")
+      .style("font-size", () => (screenSize.isMobile ? "6px" : "14px"))
       .attr("dy", ".02rem")
       .attr("dx", () => {
         return -vizDimensions.value.ctrHeight + maxGroupMembers.value * seatRadius.value * 2
@@ -214,7 +219,13 @@ async function updateAndRotateViz(direction) {
 async function setVizDimensions(element) {
   vizDimensions.value.width = element.node().getBoundingClientRect().width
 
-  vizDimensions.value.height = vizDimensions.value.width * 0.3
+  const heightFactor = screenSize.isMobile ? 0.45 : 0.3
+  vizDimensions.value.height = vizDimensions.value.width * heightFactor
+
+  vizDimensions.value.margin.top = screenSize.isMobile ? 10 : 50
+  vizDimensions.value.margin.right = screenSize.isMobile ? 5 : 25
+  vizDimensions.value.margin.bottom = screenSize.isMobile ? 18 : 25
+  vizDimensions.value.margin.left = screenSize.isMobile ? 5 : 25
 
   vizDimensions.value.ctrWidth =
     vizDimensions.value.width - vizDimensions.value.margin.left - vizDimensions.value.margin.right
@@ -309,7 +320,7 @@ async function drawXaxis() {
     .append("g")
     .attr("id", "x-axis")
     .attr("transform", `translate(0, ${vizDimensions.value.ctrHeight})`)
-    .style("font-size", "14px")
+    .style("font-size", () => (screenSize.isMobile ? "8px" : "14px"))
 
   formatxAxis()
 }
@@ -414,7 +425,7 @@ const seatRadius = computed(() => {
     return Math.min(halfX, halfY)
   }
 
-  return 5
+  return screenSize.isMobile ? 3.3 : 5
 })
 
 function xAccessor(d) {

@@ -13,6 +13,8 @@ import TheLegend from "../components/TheLegend.vue"
 
 const screenSize = useScreenSizeStore()
 const council = useCouncilStore()
+
+const legendTitleAreaFlexSize = screenSize.isMobile ? 0 : 15
 </script>
 
 <template>
@@ -27,7 +29,7 @@ const council = useCouncilStore()
     </div>
     <div class="parliament-visualization">
       <div class="legend-title-area">
-        <n-flex :size="15">
+        <n-flex :size="legendTitleAreaFlexSize">
           <div class="legend-title-buffer"></div>
           <div class="legend-title">
             <TheLegendTitle />
@@ -134,5 +136,20 @@ const council = useCouncilStore()
 
 .member-focus-selection {
   flex: 1;
+}
+
+@media only screen and (max-width: 768px) {
+  .council-title {
+    font-size: 1rem;
+  }
+  .legend-title-buffer {
+    flex: 0;
+  }
+  .legend-title {
+    font-size: 12px;
+  }
+  .x-axis-title {
+    font-size: 12px;
+  }
 }
 </style>

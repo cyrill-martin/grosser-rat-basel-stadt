@@ -24,6 +24,15 @@ const label = computed(() => {
 
 const value = ref(null)
 
+const options = computed(() => {
+  console.log(council.seatOptions)
+  if (props.type === "feature") {
+    const filteredOptions = council.seatOptions.filter((item) => item.value !== "occupation")
+    return filteredOptions
+  }
+  return council.seatOptions
+})
+
 watch(
   () => value.value,
   (newValue) => {
@@ -57,7 +66,7 @@ watch(
     <label for="{{ props.type }}">{{ label }}</label>
     <n-select
       v-model:value="value"
-      :options="council.seatOptions"
+      :options="options"
       :id="props.type"
       :placeholder="$t('seatSelection.placeholder')"
       clearable

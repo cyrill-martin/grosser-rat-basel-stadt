@@ -6,7 +6,7 @@ export const customColorScale = {
   highColor: "#000000"
 }
 
-export const ordinalColors = d3.schemeObservable10
+export const ordinalColors = d3.schemeTableau10
 
 export const focusColors = [
   "#a6cee3",
@@ -33,23 +33,23 @@ export const customColors = {
     FDP: "#6699cc",
     GLP: "#66b299",
     Grüne: "#b2d966",
-    LDP: "#6699cc",
-    Mitte: "#6699cc",
+    LDP: "#4c8bca",
+    Mitte: "#2979c9",
     SP: "#ff6666",
     SVP: "#66cc99",
     VA: "#ccb2d6",
-    jgb: "#b2d966"
+    jgb: "#caec85"
   },
   fraction: {
-    CVP: "#6699cc",
+    CVP: "#ffa620",
     DSP: "#ffb266",
     EVP: "#ffeb66",
     "EVP/DSP": "#ffeb66",
     FDP: "#6699cc",
     GAB: "#b2d966",
     GLP: "#66b299",
-    LDP: "#6699cc",
-    "Mitte-EVP": "#6699cc",
+    LDP: "#4c8bca",
+    "Mitte-EVP": "#2979c9",
     SBP: "#ff6666",
     SD: "#ff6666",
     SP: "#ff6666",
@@ -79,10 +79,10 @@ export const customColors = {
     "90-99": "#000000"
   },
   vote: {
-    Ja: "#1a9641",
-    Nein: "#d7191c",
-    "Nicht abgestimmt": "#bababa",
-    Enthalten: "#fdae61",
-    Präsidium: "#2b83ba"
+    Ja: "#59a14f",
+    Nein: "#e15759",
+    "Nicht abgestimmt": "#9c755f",
+    Enthalten: "#bab0ab",
+    Präsidium: "#4e79a7"
   }
 }

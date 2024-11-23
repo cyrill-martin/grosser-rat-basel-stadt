@@ -35,4 +35,13 @@ import { NFlex } from "naive-ui"
   display: flex;
   justify-content: flex-end;
 }
+
+@media only screen and (max-width: 768px) {
+  .home-link a {
+    font-size: 1.2rem;
+  }
+  .navigation {
+    font-size: 14px;
+  }
+}
 </style>

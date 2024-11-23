@@ -1,9 +1,11 @@
 <script setup>
 import { onMounted, ref, computed, watch } from "vue"
 import * as d3 from "d3"
+import { useScreenSizeStore } from "../stores/screenSize.js"
 import { useCouncilStore } from "../stores/council.js"
 import { customColorScale, customColors, ordinalColors } from "../utils/customColors.js"
 
+const screenSize = useScreenSizeStore()
 const council = useCouncilStore()
 
 onMounted(() => {
@@ -248,11 +250,11 @@ function bandColorAccessor(value, i) {
   return ordinalColors[i % ordinalColors.length]
 }
 
-const legendItemSpacing = 20
-const legendItemRadius = (legendItemSpacing / 2) * 0.75
-
 async function drawBandLegend(domain) {
   let legendGroup = ctr.value.select("#legend-group")
+
+  const legendItemSpacing = screenSize.isMobile ? 13 : 20
+  const legendItemRadius = (legendItemSpacing / 2) * 0.75
 
   const uniqueDataArray = domain.map((item) => ({
     id: `${seatFeature.value}_${item}`,

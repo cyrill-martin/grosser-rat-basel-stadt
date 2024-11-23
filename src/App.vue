@@ -5,10 +5,18 @@ import TheHeader from "./components/layout/TheHeader.vue"
 import TheFooter from "./components/layout/TheFooter.vue"
 import TheUrlHandler from "./components/TheUrlHandler.vue"
 import { naiveUithemeOverrides } from "./utils/naiveUithemeOverrides.js"
+
+import de from "date-fns/locale/de"
+import { createLocale } from "naive-ui"
+
+const dateDeDE = createLocale({
+  name: "de-DE",
+  locale: de
+})
 </script>
 
 <template>
-  <n-config-provider :theme-overrides="naiveUithemeOverrides">
+  <n-config-provider :theme-overrides="naiveUithemeOverrides" :date-locale="dateDeDE">
     <n-message-provider>
       <TheUrlHandler />
       <n-flex vertical :size="0" class="app-container">
