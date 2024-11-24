@@ -17,6 +17,23 @@ async function drawLegend() {
   await createLegend()
 }
 
+async function updateLegendHeight(type) {
+  await setLegendDimensions()
+
+  if (type === "band") {
+    const height = legendDomain.value.length * 13
+    await svg.value
+      .transition()
+      .attr("viewBox", `0 0 ${legendDimensions.value.width} ${height}`)
+      .end()
+  } else {
+    await svg.value
+      .transition()
+      .attr("viewBox", `0 0 ${legendDimensions.value.width} ${legendDimensions.value.height}`)
+      .end()
+  }
+}
+
 async function createLegend() {
   if (legendScaleType.value.type !== "band") {
     await drawColorBar()
@@ -34,14 +51,27 @@ const ctr = ref(null)
 const legendDimensions = ref({
   width: null,
   height: null,
-  margin: { top: 20, right: 5, bottom: 25, left: 5 },
+  margin: { top: screenSize.isMobile ? 5 : 20, right: 5, bottom: 25, left: 5 },
   ctrWidth: null,
   ctrHeight: null
 })
 
-async function setLegendDimensions(legendElement, councilElement) {
+async function setLegendDimensions() {
+  const legendElement = d3.select("#grand-council-basel-legend")
+  const councilElement = d3.select("#grand-council-basel")
+
   legendDimensions.value.width = await legendElement.node().getBoundingClientRect().width
-  legendDimensions.value.height = await councilElement.node().getBoundingClientRect().height
+
+  if (screenSize.isMobile) {
+    if (legendScaleType.value.type !== "band") {
+      legendDimensions.value.height =
+        (await councilElement.node().getBoundingClientRect().height) * 0.5
+    } else {
+      legendDimensions.value.height = 1
+    }
+  } else {
+    legendDimensions.value.height = await councilElement.node().getBoundingClientRect().height
+  }
 
   legendDimensions.value.ctrWidth =
     legendDimensions.value.width -
@@ -112,9 +142,8 @@ const legendAxis = ref(null)
 // Methods /////////////////////////////////////////////////////////
 async function initiateSvg() {
   const legendElement = d3.select("#grand-council-basel-legend")
-  const councilElement = d3.select("#grand-council-basel")
 
-  await setLegendDimensions(legendElement, councilElement)
+  await setLegendDimensions()
 
   // Create the SVG and set the viewBox
   svg.value = legendElement
@@ -122,13 +151,14 @@ async function initiateSvg() {
     .attr("id", "svg-legend")
     .attr("viewBox", `0 0 ${legendDimensions.value.width} ${legendDimensions.value.height}`)
 
+  const ctrXTranslation = screenSize.isMobile
+    ? legendDimensions.value.ctrWidth * 0.5
+    : legendDimensions.value.margin.left
+
   ctr.value = svg.value
     .append("g")
     .attr("id", "legend-ctr")
-    .attr(
-      "transform",
-      `translate(${legendDimensions.value.margin.left}, ${legendDimensions.value.margin.top})`
-    )
+    .attr("transform", `translate(${ctrXTranslation}, ${legendDimensions.value.margin.top})`)
 }
 
 async function setLegendScale() {
@@ -147,7 +177,8 @@ async function setLegendScale() {
 }
 
 const colorScaleBarWidth = computed(() => {
-  return legendDimensions.value.ctrWidth * 0.1
+  const widthFactor = screenSize.isMobile ? 0.05 : 0.1
+  return legendDimensions.value.ctrWidth * widthFactor
 })
 
 async function drawLegendAxis() {
@@ -155,7 +186,6 @@ async function drawLegendAxis() {
     .append("g")
     .attr("id", "legend-axis")
     .attr("transform", `translate(${colorScaleBarWidth.value}, 0)`)
-    .style("font-size", "0.8rem")
 
   formatLegendAxis()
 }
@@ -196,11 +226,17 @@ async function formatLegendAxis() {
     axisCall.tickSize(0).tickPadding(5).tickSizeOuter(0).tickValues(tickValues).tickFormat(deCH)
   }
 
-  legendAxis.value.transition().call(axisCall)
+  legendAxis.value
+    .transition()
+    .call(axisCall)
+    .style("font-size", () => (screenSize.isMobile ? "8px" : "14px"))
+
   legendAxis.value.call((axis) => axis.select(".domain").remove())
 }
 
 async function updateLegend(changeOfScale) {
+  if (screenSize.isMobile) await updateLegendHeight(legendScaleType.value.type)
+
   if (changeOfScale) {
     d3.select("#legend-axis").remove()
     d3.select("#color-bar").remove()
@@ -292,7 +328,7 @@ async function drawBandLegend(domain) {
     .append("text")
     .attr("x", legendItemSpacing)
     .attr("y", 0)
-    .style("font-size", "14px")
+    .style("font-size", () => (screenSize.isMobile ? "8px" : "14px"))
     .attr("dominant-baseline", "middle")
     .text((d) => d.value)
 

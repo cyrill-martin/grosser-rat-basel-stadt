@@ -141,12 +141,14 @@ const legendTitleAreaFlexSize = screenSize.isMobile ? 0 : 15
 @media only screen and (max-width: 768px) {
   .council-title {
     font-size: 1rem;
+    text-align: center;
   }
   .legend-title-buffer {
     flex: 0;
   }
   .legend-title {
     font-size: 12px;
+    text-align: center;
   }
   .x-axis-title {
     font-size: 12px;
