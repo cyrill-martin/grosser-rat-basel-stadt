@@ -253,19 +253,23 @@ async function updateLegend(changeOfScale) {
 }
 
 async function drawColorBar() {
-  // Create a linear gradient
-  const defs = svg.value.append("defs")
-  const gradient = defs
-    .append("linearGradient")
-    .attr("id", "legendGradient")
-    .attr("x1", "50%")
-    .attr("x2", "50%")
-    .attr("y1", "0%")
-    .attr("y2", "100%")
+  let gradient = svg.value.select("#legendGradient")
 
-  // Add color stops to the gradient
-  gradient.append("stop").attr("offset", "0%").attr("stop-color", customColorScale.lowColor)
-  gradient.append("stop").attr("offset", "100%").attr("stop-color", customColorScale.highColor)
+  if (gradient.empty()) {
+    // Create a linear gradient if it doesn't exist
+    const defs = svg.value.append("defs")
+    gradient = defs
+      .append("linearGradient")
+      .attr("id", "legendGradient")
+      .attr("x1", "50%")
+      .attr("x2", "50%")
+      .attr("y1", "0%")
+      .attr("y2", "100%")
+
+    // Add color stops to the gradient
+    gradient.append("stop").attr("offset", "0%").attr("stop-color", customColorScale.lowColor)
+    gradient.append("stop").attr("offset", "100%").attr("stop-color", customColorScale.highColor)
+  }
 
   ctr.value
     .append("rect")

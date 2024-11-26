@@ -21,12 +21,12 @@
   "seatSelection.label.arrangement": "Sitzverteilung",
   "seatSelection.label.feature": "Merkmal",
   "memberFocusSelection.label": "Fokus",
-  "memberFocusSelection.placeholder": "Ratsmitglied suchen oder auswählen",
+  "memberFocusSelection.placeholder": "Mitglied suchen oder auswählen - oder direkt oben mit Rechtsklick markieren",
   "votesTable.label": "Schlussabstimmungen",
   "votesTable.header.column1": "Schlussabstimmungen",
-  "votesTable.tooltip.importResults": "Zu'Sitzverteilung' und 'Merkmal' hinzufügen",
+  "votesTable.tooltip.importResults": "Zu 'Sitzverteilung' und 'Merkmal' hinzufügen",
   "votesTable.tooltip.resultsImported": "Hinzugefügt",
-  "seatSelection.daysInCouncil": "Anzahl ununterbrochene Tage im Amt",
+  "seatSelection.daysInCouncil": "Ununterbrochene Tage im Amt",
   "seatSelection.gender": "Geschlecht",
   "seatSelection.age": "Alter",
   "seatSelection.ageGroup": "Altersgruppe",
@@ -36,5 +36,6 @@
   "seatSelection.fraction": "Fraktion",
   "seatSelection.nrCommissions": "Anzahl Kommissionen",
   "seatSelection.nrConflictsOfInterest": "Anzahl Interessensbindungen",
-  "seatSelection.nrImpetuses": "Anzahl Vorstösse (während allen bisherigen Amtszeiten)"
+  "seatSelection.nrImpetuses": "Anzahl Vorstösse (während allen bisherigen Amtszeiten)",
+  "tooltip.hint": "Rechtsklick für Fokus"
 }

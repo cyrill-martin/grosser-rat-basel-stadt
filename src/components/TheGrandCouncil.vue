@@ -21,6 +21,9 @@ import {
   focusOpacity
 } from "../utils/customColors.js"
 
+// import { useI18n } from "vue-i18n"
+// const { t } = useI18n()
+
 const screenSize = useScreenSizeStore()
 const council = useCouncilStore()
 
@@ -651,6 +654,11 @@ function addMouseover(d) {
     tooltip.value.select(".arrangement").text(d[seatArrangement.value])
     tooltip.value.select(".feature").text(d[seatFeature.value])
   }
+
+  // if (!d.focus) {
+  //   tooltip.value.select(".hint").text(t("tooltip.hint"))
+  // }
+
   tooltip.value.style("visibility", "visible")
 }
 
@@ -667,6 +675,7 @@ function resetTooltip() {
   tooltip.value.select(".name").text(null)
   tooltip.value.select(".arrangement").text(null)
   tooltip.value.select(".feature").text(null)
+  tooltip.value.select(".hint").text(null)
 
   tooltip.value.style("visibility", "hidden")
 }
@@ -690,6 +699,7 @@ function handleRighClick(event, d) {
     <div class="name"></div>
     <div class="arrangement"></div>
     <div class="feature"></div>
+    <div class="hint"></div>
   </div>
 </template>
 
@@ -716,5 +726,9 @@ img {
   object-fit: contain;
   filter: grayscale(100%);
   background-color: #dddddd;
+}
+
+.hint {
+  font-size: 10px;
 }
 </style>
