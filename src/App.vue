@@ -1,9 +1,13 @@
 <script setup>
+import { defineAsyncComponent } from "vue"
 import { NConfigProvider, NMessageProvider, NFlex } from "naive-ui"
 import { RouterView } from "vue-router"
-import TheHeader from "./components/layout/TheHeader.vue"
-import TheFooter from "./components/layout/TheFooter.vue"
-import TheUrlHandler from "./components/TheUrlHandler.vue"
+// import TheHeader from "./components/layout/TheHeader.vue"
+const TheHeader = defineAsyncComponent(() => import("./components/layout/TheHeader.vue"))
+// import TheFooter from "./components/layout/TheFooter.vue"
+const TheFooter = defineAsyncComponent(() => import("./components/layout/TheFooter.vue"))
+// import TheUrlHandler from "./components/TheUrlHandler.vue"
+const TheUrlHandler = defineAsyncComponent(() => import("./components/TheUrlHandler.vue"))
 import { naiveUithemeOverrides } from "./utils/naiveUithemeOverrides.js"
 
 import de from "date-fns/locale/de"
