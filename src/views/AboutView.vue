@@ -83,7 +83,7 @@ import { NFlex } from "naive-ui"
 }
 
 img {
-  height: 60px;
+  height: 72px;
 }
 
 @media only screen and (max-width: 1200px) {
@@ -93,7 +93,7 @@ img {
     font-size: 12px;
   }
   img {
-    height: 57px;
+    height: 54px;
   }
 }
 </style>
