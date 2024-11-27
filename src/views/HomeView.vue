@@ -1,15 +1,19 @@
 <script setup>
+import { defineAsyncComponent } from "vue"
 import { NFlex } from "naive-ui"
 import { useScreenSizeStore } from "../stores/screenSize.js"
 import { useCouncilStore } from "../stores/council.js"
-import TheCouncilSelection from "../components/TheCouncilSelection.vue"
-import TheVotesTable from "../components/TheVotesTable.vue"
-import TheSeatSelection from "../components/TheSeatSelection.vue"
-import TheMemberFocus from "../components/TheMemberFocus.vue"
-import TheGrandCouncil from "../components/TheGrandCouncil.vue"
-import TheLegendTitle from "../components/TheLegendTitle.vue"
-import TheXAxisTitle from "../components/TheXAxisTitle.vue"
-import TheLegend from "../components/TheLegend.vue"
+
+const TheCouncilSelection = defineAsyncComponent(
+  () => import("../components/TheCouncilSelection.vue")
+)
+const TheVotesTable = defineAsyncComponent(() => import("../components/TheVotesTable.vue"))
+const TheSeatSelection = defineAsyncComponent(() => import("../components/TheSeatSelection.vue"))
+const TheMemberFocus = defineAsyncComponent(() => import("../components/TheMemberFocus.vue"))
+const TheGrandCouncil = defineAsyncComponent(() => import("../components/TheGrandCouncil.vue"))
+const TheLegendTitle = defineAsyncComponent(() => import("../components/TheLegendTitle.vue"))
+const TheXAxisTitle = defineAsyncComponent(() => import("../components/TheXAxisTitle.vue"))
+const TheLegend = defineAsyncComponent(() => import("../components/TheLegend.vue"))
 
 const screenSize = useScreenSizeStore()
 const council = useCouncilStore()

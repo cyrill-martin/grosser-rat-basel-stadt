@@ -6,9 +6,9 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "predeploy:test": "vite build && echo grosserrat-bs-test.kmapper.ch > dist/CNAME",
-    "predeploy:prod": "vite build && echo grosserrat-bs.kmapper.ch > dist/CNAME",
+    "predeploy:test": "cp index.test.html index.html && vite build && echo grosserrat-bs-test.kmapper.ch > dist/CNAME",
     "deploy:test": "gh-pages -d dist -r https://github.com/cyrill-martin/grosser-rat-basel-stadt-test.git",
+    "predeploy:prod": "cp index.prod.html index.html && vite build && echo grosserrat-bs.kmapper.ch > dist/CNAME",
     "deploy:prod": "gh-pages -d dist -r https://github.com/cyrill-martin/grosser-rat-basel-stadt.git",
     "preview": "vite preview",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore",

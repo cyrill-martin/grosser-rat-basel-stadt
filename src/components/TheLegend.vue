@@ -1,6 +1,6 @@
 <script setup>
 import { onMounted, ref, computed, watch } from "vue"
-import * as d3 from "d3"
+import d3 from "../d3-importer.js"
 import { useScreenSizeStore } from "../stores/screenSize.js"
 import { useCouncilStore } from "../stores/council.js"
 import { customColorScale, customColors, ordinalColors } from "../utils/customColors.js"

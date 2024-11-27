@@ -1,7 +1,7 @@
 <script setup>
 /*
-This component draws the 100 members of the Grand Council.
-The data to draw either comes from council.membersCurrent or council.membersAsOfDate.
+This component draws the 100 members of the Grand Council from either 
+council.membersCurrent or council.membersAsOfDate.
 
 The component listens to the user selections and updates the drawn members accordingly:
 - council.seatArrangement
@@ -11,7 +11,7 @@ The component listens to the user selections and updates the drawn members accor
 
 import { ref, computed, onMounted, watch } from "vue"
 import { useScreenSizeStore } from "../stores/screenSize.js"
-import * as d3 from "d3"
+import d3 from "../d3-importer.js"
 import { useCouncilStore } from "../stores/council.js"
 import {
   customColorScale,
@@ -20,9 +20,6 @@ import {
   focusColors,
   focusOpacity
 } from "../utils/customColors.js"
-
-// import { useI18n } from "vue-i18n"
-// const { t } = useI18n()
 
 const screenSize = useScreenSizeStore()
 const council = useCouncilStore()
