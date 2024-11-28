@@ -292,13 +292,15 @@ async function drawColorBar() {
     gradient.append("stop").attr("offset", "100%").attr("stop-color", customColorScale.highColor)
   }
 
+  const colorBarTransition = d3.transition().duration(1000)
+
   ctr.value
     .append("rect")
     .attr("id", "color-bar")
     .attr("x", 0)
     .attr("y", 0)
     .attr("width", colorScaleBarWidth.value)
-    .transition()
+    .transition(colorBarTransition)
     .attr("height", legendDimensions.value.ctrHeight)
     .style("fill", "url(#legendGradient)")
 }
@@ -360,9 +362,10 @@ async function drawBandLegend(domain) {
   // Handle both enter and update selections
   const legendUpdate = legendGroup.selectAll(".legend-item").data(uniqueDataArray, (d) => d.id)
 
+  const bandTransition = d3.transition().duration(1000)
   // (update) =>
   legendUpdate
-    .transition()
+    .transition(bandTransition)
     .attr("transform", (_, i) => `translate(0, ${legendItemSpacing * i})`)
     .select("text")
     .text((d) => d.value)
