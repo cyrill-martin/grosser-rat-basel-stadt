@@ -70,7 +70,7 @@ const ctr = ref(null)
 const legendDimensions = ref({
   width: null,
   height: null,
-  margin: { top: screenSize.isMobile ? 8 : 20, right: 5, bottom: 25, left: 5 },
+  margin: { top: null, right: 5, bottom: 25, left: 5 },
   ctrWidth: null,
   ctrHeight: null
 })
@@ -91,6 +91,8 @@ async function setLegendDimensions() {
   } else {
     legendDimensions.value.height = await councilElement.node().getBoundingClientRect().height
   }
+
+  legendDimensions.value.margin.top = screenSize.isMobile ? 5 : 20
 
   legendDimensions.value.ctrWidth =
     legendDimensions.value.width -

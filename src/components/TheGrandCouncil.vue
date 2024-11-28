@@ -51,6 +51,9 @@ async function reDrawViz() {
   d3.select("#svg-visualization").remove()
   await drawViz()
   await drawSeatArrangement(members.value)
+  if (seatArrangement.value === "occupation") {
+    await updateAndRotateViz("increased")
+  }
 }
 
 // Data ////////////////////////////////////////////////////////////
@@ -211,19 +214,19 @@ async function updateAndRotateViz(direction) {
   const height = direction === "increased" ? xSpacing.value * 100 * 1.1 : vizDimensions.value.height
   const svgDegree = direction === "increased" ? "270" : "0"
 
+  const rotateSvgTransition = d3.transition().duration(2500)
+  const rotateXaxisTransition = rotateSvgTransition.transition().duration(1500)
+
   await svg.value
-    .transition()
-    .duration(2000)
+    .transition(rotateSvgTransition)
     .attr("viewBox", `0 0 ${vizDimensions.value.width} ${height}`)
     .attr("transform", `rotate(${svgDegree})`)
-    .end()
 
   if (direction === "increased") {
     // Rotate axis tick labels
     await xAxis.value
       .selectAll("text")
-      .transition()
-      .duration(1000)
+      .transition(rotateXaxisTransition)
       .style("text-anchor", "start")
       .style("font-size", () => (screenSize.isMobile ? "6px" : "14px"))
       .attr("dy", ".02rem")
@@ -231,7 +234,6 @@ async function updateAndRotateViz(direction) {
         return -vizDimensions.value.ctrHeight + maxGroupMembers.value * seatRadius.value * 2
       })
       .attr("transform", "rotate(90)")
-      .end()
   }
 }
 
