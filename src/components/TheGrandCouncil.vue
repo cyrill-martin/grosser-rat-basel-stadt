@@ -11,7 +11,6 @@ The component listens to the user selections and updates the drawn members accor
 
 import { ref, computed, onMounted, watch } from "vue"
 import { useScreenSizeStore } from "../stores/screenSize.js"
-import d3 from "../d3-importer.js"
 import { useCouncilStore } from "../stores/council.js"
 import {
   customColorScale,
@@ -20,6 +19,8 @@ import {
   focusColors,
   focusOpacity
 } from "../utils/customColors.js"
+import { debounce } from "../utils/debounce.js"
+import d3 from "../d3-importer.js"
 
 const screenSize = useScreenSizeStore()
 const council = useCouncilStore()
@@ -33,6 +34,24 @@ onMounted(() => {
     sortMembers()
   }
 })
+
+// Handle screen resizing //////////////////////////////////////////
+watch(
+  () => screenSize.width,
+  () => {
+    debouncedRecreate()
+  }
+)
+
+const debouncedRecreate = debounce(() => {
+  reDrawViz()
+}, 200)
+
+async function reDrawViz() {
+  d3.select("#svg-visualization").remove()
+  await drawViz()
+  await drawSeatArrangement(members.value)
+}
 
 // Data ////////////////////////////////////////////////////////////
 const svg = ref(null)

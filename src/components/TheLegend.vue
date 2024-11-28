@@ -1,9 +1,10 @@
 <script setup>
 import { onMounted, ref, computed, watch } from "vue"
-import d3 from "../d3-importer.js"
 import { useScreenSizeStore } from "../stores/screenSize.js"
 import { useCouncilStore } from "../stores/council.js"
 import { customColorScale, customColors, ordinalColors } from "../utils/customColors.js"
+import { debounce } from "../utils/debounce.js"
+import d3 from "../d3-importer.js"
 
 const screenSize = useScreenSizeStore()
 const council = useCouncilStore()
@@ -11,6 +12,24 @@ const council = useCouncilStore()
 onMounted(() => {
   drawLegend()
 })
+
+// // Handle screen resizing //////////////////////////////////////////
+watch(
+  () => screenSize.width,
+  () => {
+    debouncedRecreate()
+  }
+)
+
+const debouncedRecreate = debounce(() => {
+  reDrawLegend()
+}, 200)
+
+async function reDrawLegend() {
+  d3.select("#svg-legend").remove()
+  await drawLegend()
+  await updateLegend()
+}
 
 async function drawLegend() {
   await initiateSvg()
@@ -51,7 +70,7 @@ const ctr = ref(null)
 const legendDimensions = ref({
   width: null,
   height: null,
-  margin: { top: screenSize.isMobile ? 5 : 20, right: 5, bottom: 25, left: 5 },
+  margin: { top: screenSize.isMobile ? 8 : 20, right: 5, bottom: 25, left: 5 },
   ctrWidth: null,
   ctrHeight: null
 })
