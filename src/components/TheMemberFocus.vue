@@ -38,6 +38,7 @@ watch(
   () => council.focusOptions,
   () => {
     council.memberFocus ? (council.memberFocus.length = 0) : null
+    updateUrl(route, router)
   }
 )
 
