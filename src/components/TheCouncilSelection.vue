@@ -28,12 +28,9 @@ const message = useMessage()
 onMounted(() => {
   option.value = council.asOfTimestamp ? "asOfDate" : "current"
   asOfDate.value = council.asOfTimestamp
-
-  if (council.numberOfFetches > 0)
-    updateUrl(route, router, {
-      councilDate: council.asOfTimestamp ? council.asOfTimestamp : "current",
-      focus: []
-    })
+  if (council.numberOfFetches > 0) {
+    updateUrl(route, router)
+  }
 })
 
 // Council radio button default
@@ -45,17 +42,20 @@ const asOfDate = ref(null)
 // Watch the radio buttons
 watch(
   () => option.value,
-  () => {
-    if (option.value === "current") {
-      asOfDate.value = null // Reset data picker
-      council.setAsOfDate(null) // Make sure to reset date in state anyways
-      council.resetAsOfDateMembers()
-      council.resetAsOfDateListOfVotes()
-      council.resetAsOfDateLoadedVotes()
-      council.resetCurrentlyFocusedMembers()
-      council.resetSelectedVotes()
-      council.getData() // Get current members
+  async (newValue) => {
+    if (newValue === "current") {
+      asOfDate.value = null // Reset date picker
+      if (council.membersAsOfDate) await council.resetAsOfCouncilState()
+      await council.getData() // Get current members
+      updateUrl(route, router)
     }
+  }
+)
+
+watch(
+  () => council.membersAsOfDate,
+  (newValue) => {
+    if (newValue) updateUrl(route, router)
   }
 )
 
@@ -64,7 +64,6 @@ watch(
   () => asOfDate.value,
   (newValue) => {
     // Is number!!
-    console.log(newValue)
     council.setAsOfDate(newValue)
   }
 )
@@ -73,17 +72,6 @@ watch(
   () => council.abortFetching,
   () => {
     noData(message, t("message.error"))
-  }
-)
-
-watch(
-  () => council.membersAsOfDate,
-  (newValue) => {
-    if (newValue) {
-      updateUrl(route, router, { councilDate: council.asOfTimestamp, focus: [] })
-    } else {
-      updateUrl(route, router, { councilDate: "current", focus: [] })
-    }
   }
 )
 

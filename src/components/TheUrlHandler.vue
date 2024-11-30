@@ -15,24 +15,25 @@ onMounted(async () => {
 
   if (qParams.councilDate) {
     const councilDate = qParams.councilDate || null
-    // const arrangement = qParams.arrangement || null
-    // const feature = qParams.feature || null
-    // const focus = qParams.focus || null
+
+    const arrangement = qParams.arrangement || null
+    const feature = qParams.feature || null
+    const focus = qParams.focus || null
 
     if (councilDate) {
       councilDate === "current"
         ? council.setAsOfDate(null)
-        : council.setAsOfDate(parseInt(councilDate))
+        : await council.setAsOfDate(parseInt(councilDate))
     }
 
     await council.getData()
 
-    // if (arrangement) council.setSeatArrangement(arrangement)
-    // if (feature) council.setSeatFeature(feature)
-    // if (focus) council.setMemberFocus(focus.split(","))
+    if (arrangement) council.setSeatArrangement(arrangement)
+    if (feature) council.setSeatFeature(feature)
+    if (focus) council.setMemberFocus(focus.split(","))
   } else {
-    updateUrl(route, router, { councilDate: "current" })
-    council.getData()
+    await council.getData()
+    updateUrl(route, router)
   }
 })
 </script>

@@ -115,7 +115,6 @@ function setSpinner() {
 }
 
 async function handlePageChange(pageNr) {
-  console.log(pagination.value)
   pagination.value.page = pageNr
 
   if (pageNr === pagination.value.pageCount) {

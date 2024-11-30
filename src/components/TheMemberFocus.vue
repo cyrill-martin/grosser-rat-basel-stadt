@@ -1,15 +1,15 @@
 <script setup>
 import { onMounted, ref, watch, h } from "vue"
-// import { useRoute, useRouter } from "vue-router"
+import { useRoute, useRouter } from "vue-router"
 import { NSelect, NTag } from "naive-ui"
 import { useCouncilStore } from "../stores/council.js"
 import { focusColors, focusOpacity } from "../utils/customColors.js"
-// import { updateUrl } from "../utils/updateUrl.js"
+import { updateUrl } from "../utils/updateUrl.js"
 import d3 from "../d3-importer.js"
 
 const council = useCouncilStore()
-// const route = useRoute()
-// const router = useRouter()
+const route = useRoute()
+const router = useRouter()
 
 // Lifecycle ///////////////////////////////////////////////////////
 onMounted(() => {
@@ -28,8 +28,8 @@ watch(
 watch(
   () => council.memberFocus,
   (newValue) => {
-    // updateUrl(route, router, { focus: newValue })
     value.value = newValue
+    updateUrl(route, router)
   }
 )
 

@@ -167,8 +167,6 @@ async function initiateSvg() {
 
   await setLegendDimensions()
 
-  console.log("height??", legendDimensions.value.height)
-
   // Create the SVG and set the viewBox
   svg.value = legendElement
     .append("svg")

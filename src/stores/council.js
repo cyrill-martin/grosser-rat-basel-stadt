@@ -203,14 +203,14 @@ export const useCouncilStore = defineStore("council", () => {
     isLoading.value = !isLoading.value
   }
 
-  function setAsOfDate(timestamp) {
+  async function setAsOfDate(timestamp) {
     if (timestamp) {
-      setAsOfTimestamp(timestamp)
       asOfDate.value = formatDate(timestamp, "api")
       asOfDateUi.value = formatDate(timestamp, "ui")
     } else {
       asOfDate.value = null
     }
+    setAsOfTimestamp(timestamp)
   }
 
   function setAsOfTimestamp(timestamp) {
@@ -246,15 +246,17 @@ export const useCouncilStore = defineStore("council", () => {
     loadedVoteResultsAsOfDate.value = new Map()
   }
 
-  async function setCouncilTitle() {
-    title.value =
-      (await asOfDate.value) && membersAsOfDate.value
-        ? `${t("home.title.councilAsOfDate")} ${asOfDateUi.value}`
-        : `${t("home.title.councilCurrent")} (${formatDate(Date.now(), "ui")})`
-  }
-
   function resetAsOfDateListOfVotes() {
     listOfVotesAsOfDate.value = []
+  }
+
+  async function resetAsOfCouncilState() {
+    // setAsOfDate(null) // Make sure to reset date in state anyways
+    resetAsOfDateMembers()
+    resetAsOfDateListOfVotes()
+    resetAsOfDateLoadedVotes()
+    resetCurrentlyFocusedMembers()
+    resetSelectedVotes()
   }
 
   // Methods //////////////////////////////////////////////////////////
@@ -265,6 +267,13 @@ export const useCouncilStore = defineStore("council", () => {
     } else if (!asOfDate.value && !membersCurrent.value) {
       membersCurrent.value = await fetchMemberData(null)
     }
+  }
+
+  async function setCouncilTitle() {
+    title.value =
+      (await asOfDate.value) && membersAsOfDate.value
+        ? `${t("home.title.councilAsOfDate")} ${asOfDateUi.value}`
+        : `${t("home.title.councilCurrent")} (${formatDate(Date.now(), "ui")})`
   }
 
   async function fetchRecentListOfVotes(limit, offset) {
@@ -403,6 +412,7 @@ export const useCouncilStore = defineStore("council", () => {
     newFetchingDone,
     numberOfFetches,
     resetCurrentlyFocusedMembers,
-    resetSelectedVotes
+    resetSelectedVotes,
+    resetAsOfCouncilState
   }
 })
