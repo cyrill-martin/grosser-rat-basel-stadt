@@ -3,7 +3,6 @@ import { defineAsyncComponent } from "vue"
 import { NFlex } from "naive-ui"
 import { useScreenSizeStore } from "../stores/screenSize.js"
 import { useCouncilStore } from "../stores/council.js"
-
 const TheCouncilSelection = defineAsyncComponent(
   () => import("../components/TheCouncilSelection.vue")
 )
@@ -54,7 +53,7 @@ const legendTitleAreaFlexSize = screenSize.isMobile ? 0 : 15
         <div class="legend-area">
           <n-flex :size:="2" vertical>
             <div class="seat-legend" id="grand-council-basel-legend">
-              <TheLegend />
+              <TheLegend v-if="council.numberOfFetches > 0" />
             </div>
           </n-flex>
         </div>

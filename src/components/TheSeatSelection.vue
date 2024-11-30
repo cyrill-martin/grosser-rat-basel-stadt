@@ -1,11 +1,16 @@
 <script setup>
 import { onMounted, ref, computed, watch } from "vue"
+// import { useRoute, useRouter } from "vue-router"
 import { NSelect } from "naive-ui"
 import { useCouncilStore } from "../stores/council.js"
+// import { updateUrl } from "../utils/updateUrl.js"
 import { useI18n } from "vue-i18n"
 
 const { t } = useI18n()
 const council = useCouncilStore()
+
+// const route = useRoute()
+// const router = useRouter()
 
 const props = defineProps(["type"])
 
@@ -25,7 +30,6 @@ const label = computed(() => {
 const value = ref(null)
 
 const options = computed(() => {
-  console.log(council.seatOptions)
   if (props.type === "feature") {
     const filteredOptions = council.seatOptions.filter((item) => item.value !== "occupation")
     return filteredOptions
@@ -46,6 +50,7 @@ watch(
   () => council.seatArrangement,
   (newValue) => {
     if (props.type === "arrangement") {
+      // updateUrl(route, router, { arrangement: newValue })
       value.value = newValue
     }
   }
@@ -55,6 +60,7 @@ watch(
   () => council.seatFeature,
   (newValue) => {
     if (props.type !== "arrangement") {
+      // updateUrl(route, router, { feature: newValue })
       value.value = newValue
     }
   }

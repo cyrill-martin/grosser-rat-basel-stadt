@@ -9,22 +9,31 @@ import {
   useMessage
 } from "naive-ui"
 import { onMounted, ref, computed, watch } from "vue"
+import { useRoute, useRouter } from "vue-router"
 import { useCouncilStore } from "../stores/council.js"
 import { noData } from "../utils/message.js"
 import TheModal from "./TheModal.vue"
+import { updateUrl } from "../utils/updateUrl.js"
 
 // Use a handler for i18n
 import { useI18n } from "vue-i18n"
 const { t } = useI18n()
 
 const council = useCouncilStore()
-
+const route = useRoute()
+const router = useRouter()
 const message = useMessage()
 
 // Lifecycle ///////////////////////////////////////////////////////
 onMounted(() => {
-  option.value = council.membersAsOfDate ? "asOfDate" : "current"
-  asOfDate.value = council.asOfDate
+  option.value = council.asOfTimestamp ? "asOfDate" : "current"
+  asOfDate.value = council.asOfTimestamp
+
+  if (council.numberOfFetches > 0)
+    updateUrl(route, router, {
+      councilDate: council.asOfTimestamp ? council.asOfTimestamp : "current",
+      focus: []
+    })
 })
 
 // Council radio button default
@@ -45,7 +54,7 @@ watch(
       council.resetAsOfDateLoadedVotes()
       council.resetCurrentlyFocusedMembers()
       council.resetSelectedVotes()
-      council.getData() // Get current members (probably from state)
+      council.getData() // Get current members
     }
   }
 )
@@ -53,8 +62,10 @@ watch(
 // Watch the date
 watch(
   () => asOfDate.value,
-  () => {
-    council.setAsOfDate(asOfDate.value)
+  (newValue) => {
+    // Is number!!
+    console.log(newValue)
+    council.setAsOfDate(newValue)
   }
 )
 
@@ -62,6 +73,17 @@ watch(
   () => council.abortFetching,
   () => {
     noData(message, t("message.error"))
+  }
+)
+
+watch(
+  () => council.membersAsOfDate,
+  (newValue) => {
+    if (newValue) {
+      updateUrl(route, router, { councilDate: council.asOfTimestamp, focus: [] })
+    } else {
+      updateUrl(route, router, { councilDate: "current", focus: [] })
+    }
   }
 )
 

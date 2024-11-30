@@ -13,7 +13,7 @@ onMounted(() => {
   drawLegend()
 })
 
-// // Handle screen resizing //////////////////////////////////////////
+// Handle screen resizing //////////////////////////////////////////
 watch(
   () => screenSize.width,
   () => {
@@ -89,7 +89,8 @@ async function setLegendDimensions() {
       legendDimensions.value.height = 1
     }
   } else {
-    legendDimensions.value.height = await councilElement.node().getBoundingClientRect().height
+    legendDimensions.value.height =
+      (await councilElement.node().getBoundingClientRect().height) || 250
   }
 
   legendDimensions.value.margin.top = screenSize.isMobile ? 5 : 20
@@ -165,6 +166,8 @@ async function initiateSvg() {
   const legendElement = d3.select("#grand-council-basel-legend")
 
   await setLegendDimensions()
+
+  console.log("height??", legendDimensions.value.height)
 
   // Create the SVG and set the viewBox
   svg.value = legendElement
@@ -265,7 +268,7 @@ async function updateLegend(changeOfScale) {
     createLegend()
   } else {
     if (legendScaleType.value.type !== "band") {
-      legendScale.value.domain(legendDomain.value)
+      legendScale.value.domain(legendDomain.value) // HERE
       formatLegendAxis()
     } else {
       drawBandLegend(legendDomain.value)
@@ -292,7 +295,7 @@ async function drawColorBar() {
     gradient.append("stop").attr("offset", "100%").attr("stop-color", customColorScale.highColor)
   }
 
-  const colorBarTransition = d3.transition().duration(1000)
+  const colorBarTransition = d3.transition().duration(1000) // AND HERE
 
   ctr.value
     .append("rect")
@@ -362,10 +365,10 @@ async function drawBandLegend(domain) {
   // Handle both enter and update selections
   const legendUpdate = legendGroup.selectAll(".legend-item").data(uniqueDataArray, (d) => d.id)
 
-  const bandTransition = d3.transition().duration(1000)
+  // const bandTransition = d3.transition().duration(1000)
   // (update) =>
   legendUpdate
-    .transition(bandTransition)
+    // .transition(bandTransition)
     .attr("transform", (_, i) => `translate(0, ${legendItemSpacing * i})`)
     .select("text")
     .text((d) => d.value)

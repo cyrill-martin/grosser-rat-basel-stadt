@@ -4,6 +4,8 @@ import { axisBottom, axisRight } from "d3-axis"
 import { scaleBand, scaleOrdinal, scaleLinear, scaleLog } from "d3-scale"
 import { transition } from "d3-transition"
 import { formatLocale } from "d3-format"
+import { color } from "d3-color"
+import { schemeTableau10 } from "d3-scale-chromatic"
 
 export default {
   select,
@@ -17,5 +19,7 @@ export default {
   scaleLinear,
   scaleLog,
   transition,
-  formatLocale
+  formatLocale,
+  color,
+  schemeTableau10
 }

@@ -1,4 +1,4 @@
-import * as d3 from "d3"
+import d3 from "../d3-importer.js"
 
 export const customColorScale = {
   logZeroColor: "#d9d9d9",

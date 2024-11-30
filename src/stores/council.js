@@ -148,6 +148,7 @@ export const useCouncilStore = defineStore("council", () => {
         // Fractions
         // Get fractions data
         currentlyLoading.value = t("modal.currentlyLoading.fractions")
+
         const fractionsMap = await fetchFractionData(memberIds, asOfDate.value)
         // Add fractions
         addFractions(targetMembers.value, fractionsMap)
@@ -371,6 +372,7 @@ export const useCouncilStore = defineStore("council", () => {
 
   return {
     asOfDate,
+    asOfTimestamp,
     setAsOfDate,
     isLoading,
     currentlyLoading,

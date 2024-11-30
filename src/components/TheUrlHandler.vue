@@ -1,20 +1,37 @@
 <script setup>
 import { onMounted } from "vue"
-import { useRoute } from "vue-router"
+import { useRoute, useRouter } from "vue-router"
 import { useCouncilStore } from "../stores/council.js"
+import { updateUrl } from "../utils/updateUrl.js"
 
-// Use the router
 const route = useRoute()
-// Use the council store
+const router = useRouter()
+
 const council = useCouncilStore()
 
 onMounted(async () => {
   // Access query parameters
-  const qParam = route.query.q
+  const qParams = route.query
 
-  if (qParam) {
-    return
+  if (qParams.councilDate) {
+    const councilDate = qParams.councilDate || null
+    // const arrangement = qParams.arrangement || null
+    // const feature = qParams.feature || null
+    // const focus = qParams.focus || null
+
+    if (councilDate) {
+      councilDate === "current"
+        ? council.setAsOfDate(null)
+        : council.setAsOfDate(parseInt(councilDate))
+    }
+
+    await council.getData()
+
+    // if (arrangement) council.setSeatArrangement(arrangement)
+    // if (feature) council.setSeatFeature(feature)
+    // if (focus) council.setMemberFocus(focus.split(","))
   } else {
+    updateUrl(route, router, { councilDate: "current" })
     council.getData()
   }
 })

@@ -241,6 +241,7 @@ async function setVizDimensions(element) {
   vizDimensions.value.width = element.node().getBoundingClientRect().width
 
   const heightFactor = screenSize.isMobile ? 0.45 : 0.3
+
   vizDimensions.value.height = vizDimensions.value.width * heightFactor
 
   vizDimensions.value.margin.top = screenSize.isMobile ? 10 : 50

@@ -57,6 +57,7 @@ export async function fetchMemberData(asOfDate) {
   return members.results
 }
 
+// 100308
 export async function fetchFractionData(memberIds, asOfDate) {
   const joinedMembers = memberIds.map((item) => `'${item}'`).join(",")
 
@@ -64,7 +65,7 @@ export async function fetchFractionData(memberIds, asOfDate) {
     `uni_nr_adr IN (${joinedMembers}) AND beginn_mit <= '${asOfDate}' AND (ende_mit >= '${asOfDate}' OR ende_mit IS NULL) AND gremientyp="Fraktion"`
   )
 
-  // Problem: if current members are voted out of council, they already have an ende_mit data!!
+  // Problem: if current members are voted out of council, they already have an ende_mit date!!
   const currentWhere = encodeURIComponent(
     `uni_nr_adr IN (${joinedMembers}) AND gremientyp="Fraktion" AND (ende_mit IS NULL OR ende_mit >= ${formatDate(Date.now(), "api")})` // AND ende_mit IS NULL
   )
