@@ -251,7 +251,7 @@ export const useCouncilStore = defineStore("council", () => {
   }
 
   async function resetAsOfCouncilState() {
-    // setAsOfDate(null) // Make sure to reset date in state anyways
+    // setAsOfDate(null)
     resetAsOfDateMembers()
     resetAsOfDateListOfVotes()
     resetAsOfDateLoadedVotes()
@@ -364,6 +364,7 @@ export const useCouncilStore = defineStore("council", () => {
   }
 
   function createFocusOptions(members) {
+    console.log("problem here??")
     const names = members
       .map((member) => `${member.name}_${member.id}`)
       .sort()

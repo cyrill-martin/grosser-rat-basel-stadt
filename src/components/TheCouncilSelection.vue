@@ -44,10 +44,13 @@ watch(
   () => option.value,
   async (newValue) => {
     if (newValue === "current") {
-      asOfDate.value = null // Reset date picker
-      if (council.membersAsOfDate) await council.resetAsOfCouncilState()
-      await council.getData() // Get current members
-      updateUrl(route, router)
+      asOfDate.value = null // Always reset date picker
+      if (council.membersAsOfDate) {
+        // Reset data if there was actually asOfDate data
+        await council.resetAsOfCouncilState()
+        await council.getData()
+        updateUrl(route, router)
+      }
     }
   }
 )
