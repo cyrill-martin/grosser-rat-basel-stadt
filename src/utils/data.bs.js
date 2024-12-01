@@ -39,6 +39,7 @@ async function fetchFromDataBS(obj) {
   }
 }
 
+// 100307 - members
 export async function fetchMemberData(asOfDate) {
   const asOfDateWhere = encodeURIComponent(
     `gr_beginn <= '${asOfDate}' AND (gr_ende IS NULL OR gr_ende >= '${asOfDate}')`
@@ -57,7 +58,7 @@ export async function fetchMemberData(asOfDate) {
   return members.results
 }
 
-// 100308
+// 100308 - fractions
 export async function fetchFractionData(memberIds, asOfDate) {
   const joinedMembers = memberIds.map((item) => `'${item}'`).join(",")
 
@@ -93,6 +94,7 @@ export async function fetchFractionData(memberIds, asOfDate) {
   return new Map(finalFractions.map((item) => [item.uni_nr_adr, item.kurzname_gre]))
 }
 
+// 100308 - commissions
 export async function fetchCommissionData(memberIds, asOfDate) {
   const joinedMembers = memberIds.map((item) => `'${item}'`).join(",")
   const asOfDateWhere = encodeURIComponent(
@@ -114,6 +116,7 @@ export async function fetchCommissionData(memberIds, asOfDate) {
   return new Map(commissions.results.map((item) => [item.uni_nr_adr, item.nr_of_commissions]))
 }
 
+// 100309 - conflicts of interest
 export async function fetchConflictOfInterestData(memberIds) {
   const joinedMembers = memberIds.map((item) => `'${item}'`).join(",")
 
@@ -131,6 +134,7 @@ export async function fetchConflictOfInterestData(memberIds) {
   )
 }
 
+// 100311 - impetuses
 export async function fetchImpetusData(memberIds, asOfDate) {
   const joinedMembers = memberIds.map((item) => `'${item}'`).join(",")
   const asOfDateWhere = encodeURIComponent(
@@ -150,6 +154,7 @@ export async function fetchImpetusData(memberIds, asOfDate) {
   return new Map(impetuses.results.map((item) => [item.nr_urheber, item.nr_of_impetuses]))
 }
 
+// 100186 - votes
 export async function fetchListOfVotes(asOfDate, limit, offset) {
   const asOfDateWhere = encodeURIComponent(
     `datum <= "${asOfDate}" AND datum >= "2009-02-01" AND typ="Schlussabstimmung"`

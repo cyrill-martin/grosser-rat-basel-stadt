@@ -9,6 +9,10 @@ const router = useRouter()
 
 const council = useCouncilStore()
 
+function isNumericValue(value) {
+  return Number.isInteger(Number(value))
+}
+
 onMounted(async () => {
   // Access query parameters
   const qParams = route.query
@@ -27,6 +31,10 @@ onMounted(async () => {
     }
 
     await council.getData()
+
+    if (isNumericValue(arrangement) || isNumericValue(feature)) {
+      console.log("I should fetch vote results")
+    }
 
     if (arrangement) council.setSeatArrangement(arrangement)
     if (feature) council.setSeatFeature(feature)

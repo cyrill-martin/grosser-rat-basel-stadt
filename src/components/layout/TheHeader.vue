@@ -1,14 +1,19 @@
 <script setup>
-import { RouterLink } from "vue-router"
+import { computed } from "vue"
+import { RouterLink, useRoute } from "vue-router"
 import { NFlex } from "naive-ui"
+
+const route = useRoute()
+const isHomeRoute = computed(() => route.name === "home")
 </script>
 
 <template>
   <n-flex>
     <div class="home-link">
-      <RouterLink to="/">
+      <RouterLink v-if="!isHomeRoute" to="/">
         {{ $t("header.grandCouncilBaselStadt") }}
       </RouterLink>
+      <span v-else>{{ $t("header.grandCouncilBaselStadt") }}</span>
     </div>
     <div class="navigation">
       <nav>
@@ -23,11 +28,14 @@ import { NFlex } from "naive-ui"
   flex: 4;
 }
 
+.home-link {
+  font-size: 2rem;
+  font-weight: 800;
+}
+
 .home-link a {
   text-decoration: none;
   color: inherit;
-  font-size: 2rem;
-  font-weight: 800;
 }
 
 .navigation {
