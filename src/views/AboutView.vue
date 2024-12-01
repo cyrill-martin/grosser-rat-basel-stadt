@@ -11,13 +11,13 @@ import { NFlex } from "naive-ui"
         basiert. Sie ist keine offizielle Veröffentlichung und wurde nicht von der Stadt Basel in
         Auftrag gegeben.
       </p>
-
       <p>
-        Die zugrunde liegenden Daten stammen vom Statistischen Amt Basel-Stadt. Die Daten werden
-        direkt vom Browser über die Schnittstellen vom Statistischen Amt bezogen und
-        weiterverarbeitet. Folgende Datensätze werden verwendet:
+        Die zugrunde liegenden Daten stammen vom
+        <a href="https://www.bs.ch/pd/statistik" target="_blank">Statistischen Amt Basel-Stadt</a>.
+        Die Daten werden direkt über die Schnittstellen vom Statistischen Amt bezogen und für die
+        Visualisierung transformiert.<br />
+        Folgende Datensätze werden verwendet:
       </p>
-
       <ul>
         <li>
           <a href="https://data.bs.ch/explore/dataset/100307/information/" target="_blank">
@@ -45,7 +45,34 @@ import { NFlex } from "naive-ui"
           </a>
         </li>
       </ul>
-
+      <p>Folgende Punkte sind zu beachten:</p>
+      <ul>
+        <li>
+          Gewisse Daten sind nur im Zusammenhang mit den aktuell im Amt tätigen Ratsmitgliedern
+          verfügbar (aktueller Grosser Rat). Dazu gehören:
+        </li>
+        <ul>
+          <li>Angaben zur Parteizugehörigkeit ("Partei")</li>
+          <li>Angaben zu den Interessensbindungen ("Anzahl Interessensbindungen")</li>
+          <li>Angaben zum Beruf ("Beruf")</li>
+          <li>Foto</li>
+        </ul>
+        <li>
+          Ist "Partei", "Anzahl Interessensbindungen" oder "Beruf" ausgewählt beim Wechsel zu einem
+          vergangenen Zustand des Grossen Rates, wird als Ersatz automatisch "Fraktion" gesetzt.
+        </li>
+        <li>
+          Die Angaben zum Beruf werden wie von den Ratsmitgliedern angegeben übernommen und sind
+          sehr vielfältig. "Beruf" steht daher nur als Sitzverteilung zur Auswahl, nicht aber als zu
+          visualisierendes Merkmal, da eine entsprechende Legende und Farbgebung keinen Mehrwert
+          bieten würde.
+        </li>
+        <li>
+          Für die Fokusierung einzelner Ratsmitglieder stehen aktuell zwölf verschiedene Farben zur
+          Verfügung. Es kann daher vorkommen, dass unterschiedliche Ratsmitglieder mit der gleichen
+          Farbe markiert werden.
+        </li>
+      </ul>
       <p>
         Der Code für die Website und die Visualisierungen ist hier verfügbar:<br />
         <a href="https://github.com/cyrill-martin/grosser-rat-basel-stadt" target="_blank"
@@ -55,8 +82,8 @@ import { NFlex } from "naive-ui"
     </div>
     <div class="about-column" style="flex: 1">
       <p>
-        Dies ist eine Test-Seite, das Projekt ist "in progress".<br />Feedback ist willkommen
-        ¯\_(ツ)_/¯
+        Dies ist eine Test-Seite und das Projekt ist "in progress".<br />
+        Feedback ist willkommen ¯\_(ツ)_/¯
       </p>
     </div>
     <div class="about-column" style="flex: 1">
