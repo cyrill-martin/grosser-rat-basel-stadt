@@ -11,6 +11,8 @@ import { NFlex } from "naive-ui"
         basiert. Sie ist keine offizielle Veröffentlichung und wurde nicht von der Stadt Basel in
         Auftrag gegeben.
       </p>
+    </div>
+    <div class="about-column" style="flex: 1">
       <p>
         Die zugrunde liegenden Daten stammen vom
         <a href="https://www.bs.ch/pd/statistik" target="_blank">Statistischen Amt Basel-Stadt</a>.
@@ -45,6 +47,8 @@ import { NFlex } from "naive-ui"
           </a>
         </li>
       </ul>
+    </div>
+    <div class="about-column" style="flex: 1">
       <p>Folgende Punkte sind zu beachten:</p>
       <ul>
         <li>
@@ -72,7 +76,13 @@ import { NFlex } from "naive-ui"
           Verfügung. Es kann daher vorkommen, dass unterschiedliche Ratsmitglieder mit der gleichen
           Farbe markiert werden.
         </li>
+        <li>
+          Beim Wechsel des angezeigten Grossen Rats (aktueller oder vergangener Grosser Rat), wird
+          akutell ein allfällig gesetzter Fokus auf ein Ratsmitglied entfernt.
+        </li>
       </ul>
+    </div>
+    <div class="about-column" style="flex: 1">
       <p>
         Der Code für die Website und die Visualisierungen ist hier verfügbar:<br />
         <a href="https://github.com/cyrill-martin/grosser-rat-basel-stadt" target="_blank"

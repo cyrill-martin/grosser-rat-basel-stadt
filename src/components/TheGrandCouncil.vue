@@ -1,6 +1,6 @@
 <script setup>
 /*
-This component draws the 100 members of the Grand Council from either 
+This component draws the 100 members of the Grand Council from either
 council.membersCurrent or council.membersAsOfDate.
 
 The component listens to the user selections and updates the drawn members accordingly:
@@ -633,9 +633,13 @@ async function drawSeatArrangement(data) {
     .attr("stroke-width", (d) => (d.focus ? seatRadius.value * 2 : null))
     .attr("stroke-opacity", (d) => (d.focus ? focusOpacity : null))
     .on("click", (_, d) => {
-      window.open(d.url, "_blank")
+      screenSize.isMobile ? null : window.open(d.url, "_blank")
     })
-    .on("mouseover", (_, d) => addMouseover(d))
+    .on("mouseover", (_, d) =>
+      setTimeout(() => {
+        addMouseover(d)
+      }, 100)
+    )
     .on("mousemove", (event) => handleMouseMove(event))
     .on("mouseout", () => resetTooltip())
     .on("contextmenu", (event, d) => handleRighClick(event, d))
@@ -662,10 +666,13 @@ async function drawSeatArrangement(data) {
   d3.select(".seats-group").raise()
 }
 
+let linkIsClicked = false
+
 function addMouseover(d) {
   if (!council.membersAsOfDate) {
     tooltip.value.select(".headshot img").attr("src", d.image)
   }
+
   tooltip.value.select(".name").text(d.name)
   if (seatArrangement.value === seatFeature.value) {
     tooltip.value.select(".arrangement").text(d[seatArrangement.value])
@@ -674,9 +681,16 @@ function addMouseover(d) {
     tooltip.value.select(".feature").text(d[seatFeature.value])
   }
 
-  // if (!d.focus) {
-  //   tooltip.value.select(".hint").text(t("tooltip.hint"))
-  // }
+  if (screenSize.isMobile) {
+    const urlDiv = tooltip.value.select(".url")
+    const link = urlDiv.select("a")
+    link.attr("href", d.url)
+
+    link.on("click", (event) => {
+      event.stopPropagation()
+      linkIsClicked = true
+    })
+  }
 
   tooltip.value.style("visibility", "visible")
 }
@@ -688,6 +702,24 @@ function handleMouseMove(event) {
 }
 
 function resetTooltip() {
+  if (screenSize.isMobile) {
+    setTimeout(
+      () => {
+        if (!linkIsClicked) {
+          hideTooltip()
+        } else {
+          linkIsClicked = false
+          hideTooltip()
+        }
+      },
+      linkIsClicked ? 1500 : 0
+    )
+  } else {
+    hideTooltip()
+  }
+}
+
+function hideTooltip() {
   if (!council.membersAsOfDate) {
     tooltip.value.select(".headshot img").attr("src", null)
   }
@@ -695,7 +727,11 @@ function resetTooltip() {
   tooltip.value.select(".arrangement").text(null)
   tooltip.value.select(".feature").text(null)
   tooltip.value.select(".hint").text(null)
-
+  if (screenSize.isMobile) {
+    const urlDiv = tooltip.value.select(".url")
+    const link = urlDiv.select("a")
+    link.attr("href", "")
+  }
   tooltip.value.style("visibility", "hidden")
 }
 
@@ -718,7 +754,9 @@ function handleRighClick(event, d) {
     <div class="name"></div>
     <div class="arrangement"></div>
     <div class="feature"></div>
-    <div class="hint"></div>
+    <div v-show="screenSize.isMobile" class="url">
+      <a href="" target="_blank">Link</a>
+    </div>
   </div>
 </template>
 

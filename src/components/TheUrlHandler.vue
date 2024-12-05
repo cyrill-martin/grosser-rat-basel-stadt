@@ -33,7 +33,9 @@ onMounted(async () => {
     await council.getData()
 
     if (isNumericValue(arrangement) || isNumericValue(feature)) {
-      console.log("I should fetch vote results")
+      console.log(
+        "I should fetch vote results and also check whether the vote is actually in the table already"
+      )
     }
 
     if (arrangement) council.setSeatArrangement(arrangement)
@@ -44,6 +46,20 @@ onMounted(async () => {
     updateUrl(route, router)
   }
 })
+
+// async function checkLoadedVotes(councilDate, voteNr) {
+//   const targetVotes =
+//     councilDate === "current" ? council.listOfVotesCurrent : council.listOfVotesAsOfDate
+
+//   const voteObj = targetVotes.find((vote) => vote.voteNr === voteNr)
+
+//   if (!voteObj) {
+//     // load votes until vote is there
+//   }
+
+//   // fetch actual vote results
+//   // set voteImported to true
+// }
 </script>
 
 <template>
