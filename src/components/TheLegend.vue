@@ -11,6 +11,9 @@ const council = useCouncilStore()
 
 onMounted(() => {
   drawLegend()
+  if (screenSize.isMobile && legendScaleType.value.type) {
+    updateLegendHeight(legendScaleType.value.type)
+  }
 })
 
 // Handle screen resizing //////////////////////////////////////////
