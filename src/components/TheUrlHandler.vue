@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted } from "vue"
+import { onMounted, ref } from "vue"
 import { useRoute, useRouter } from "vue-router"
 import { useCouncilStore } from "../stores/council.js"
 import { updateUrl } from "../utils/updateUrl.js"
@@ -12,6 +12,9 @@ const council = useCouncilStore()
 function isNumericValue(value) {
   return Number.isInteger(Number(value))
 }
+
+const numericArrangement = ref(false)
+const numericFeature = ref(false)
 
 onMounted(async () => {
   // Access query parameters
@@ -32,14 +35,36 @@ onMounted(async () => {
 
     await council.getData()
 
-    if (isNumericValue(arrangement) || isNumericValue(feature)) {
-      console.log(
-        "I should fetch vote results and also check whether the vote is actually in the table already"
-      )
+    if (arrangement) {
+      numericArrangement.value = isNumericValue(arrangement)
+
+      let arrangementVoteAvailable
+
+      if (numericArrangement.value) {
+        arrangementVoteAvailable = await checkLoadedVotes(councilDate, arrangement)
+
+        arrangementVoteAvailable
+          ? council.setSeatArrangement(arrangement)
+          : council.setSeatArrangement("fraction")
+      } else {
+        council.setSeatArrangement(arrangement)
+      }
     }
 
-    if (arrangement) council.setSeatArrangement(arrangement)
-    if (feature) council.setSeatFeature(feature)
+    if (feature) {
+      numericFeature.value = isNumericValue(feature)
+
+      let featureVoteAvailable
+
+      if (numericFeature.value) {
+        featureVoteAvailable = await checkLoadedVotes(councilDate, feature)
+
+        featureVoteAvailable ? council.setSeatFeature(feature) : council.setSeatFeature("fraction")
+      } else {
+        council.setSeatFeature(feature)
+      }
+    }
+
     if (focus) council.setMemberFocus(focus.split(","))
   } else {
     await council.getData()
@@ -47,19 +72,22 @@ onMounted(async () => {
   }
 })
 
-// async function checkLoadedVotes(councilDate, voteNr) {
-//   const targetVotes =
-//     councilDate === "current" ? council.listOfVotesCurrent : council.listOfVotesAsOfDate
+async function checkLoadedVotes(councilDate, voteNr) {
+  const targetVotes =
+    councilDate === "current" ? council.listOfVotesCurrent : council.listOfVotesAsOfDate
 
-//   const voteObj = targetVotes.find((vote) => vote.voteNr === voteNr)
+  const voteObj = targetVotes.find((vote) => vote.voteNr === voteNr)
 
-//   if (!voteObj) {
-//     // load votes until vote is there
-//   }
-
-//   // fetch actual vote results
-//   // set voteImported to true
-// }
+  if (!voteObj) {
+    return false
+  } else {
+    if (!voteObj.voteImported) {
+      await council.getVoteResults(voteObj)
+      voteObj.voteImported = true
+    }
+    return true
+  }
+}
 </script>
 
 <template>

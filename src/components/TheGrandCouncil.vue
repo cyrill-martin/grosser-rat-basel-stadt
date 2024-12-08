@@ -723,15 +723,18 @@ function hideTooltip() {
   if (!council.membersAsOfDate) {
     tooltip.value.select(".headshot img").attr("src", null)
   }
+
   tooltip.value.select(".name").text(null)
   tooltip.value.select(".arrangement").text(null)
   tooltip.value.select(".feature").text(null)
   tooltip.value.select(".hint").text(null)
+
   if (screenSize.isMobile) {
     const urlDiv = tooltip.value.select(".url")
     const link = urlDiv.select("a")
     link.attr("href", "")
   }
+
   tooltip.value.style("visibility", "hidden")
 }
 
