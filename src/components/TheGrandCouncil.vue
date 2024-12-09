@@ -240,7 +240,7 @@ async function updateAndRotateViz(direction) {
 async function setVizDimensions(element) {
   vizDimensions.value.width = element.node().getBoundingClientRect().width
 
-  const heightFactor = screenSize.isMobile ? 0.45 : 0.3
+  const heightFactor = screenSize.isMobile ? 0.5 : 0.3
 
   vizDimensions.value.height = vizDimensions.value.width * heightFactor
 
