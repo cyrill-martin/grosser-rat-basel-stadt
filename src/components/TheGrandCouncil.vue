@@ -229,7 +229,7 @@ async function updateAndRotateViz(direction) {
       .transition(rotateXaxisTransition)
       .style("text-anchor", "start")
       .style("font-size", () => (screenSize.isMobile ? "6px" : "14px"))
-      .attr("dy", ".02rem")
+      .attr("dy", () => (screenSize.isMobile ? "-0.1rem" : ".1rem"))
       .attr("dx", () => {
         return -vizDimensions.value.ctrHeight + maxGroupMembers.value * seatRadius.value * 2
       })
