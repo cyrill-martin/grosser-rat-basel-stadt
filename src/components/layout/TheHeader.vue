@@ -5,8 +5,6 @@ import { NFlex } from "naive-ui"
 
 const route = useRoute()
 const isHomeRoute = computed(() => route.name === "home")
-
-function exportPng() {}
 </script>
 
 <template>
@@ -18,7 +16,6 @@ function exportPng() {}
       <span v-else>{{ $t("header.grandCouncilBaselStadt") }}</span>
     </div>
     <div class="navigation">
-      <span @click="exportPng">Export</span>
       <nav>
         <RouterLink to="/about">{{ $t("header.navigation.about") }}</RouterLink>
       </nav>
