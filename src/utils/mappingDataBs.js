@@ -134,7 +134,7 @@ export async function mapVotesData(listOfVotes) {
     const voteNr = vote.abst_nr
     const voteSignature = vote.signatur_ges
     const voteDate = formatDate(vote.datum.slice(0, 10))
-    const voteTitle = vote.geschaeft
+    const voteTitle = `Nr. ${vote.abst_nr}: ${vote.geschaeft}`
     const voteType = vote.typ
 
     return {

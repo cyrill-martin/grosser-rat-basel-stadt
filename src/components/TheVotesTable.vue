@@ -15,7 +15,7 @@ function createColumns({ importVoteResults }) {
       key: "voteTitle",
       render(row) {
         return h("div", [
-          h("div", `${row.voteDate} - Nr. ${row.voteNr}`),
+          h("div", row.voteDate),
           row.voteSignature
             ? h(
                 "a",

@@ -715,7 +715,9 @@ function resetTooltip() {
       linkIsClicked ? 1500 : 0
     )
   } else {
-    hideTooltip()
+    setTimeout(() => {
+      hideTooltip()
+    }, 150)
   }
 }
 

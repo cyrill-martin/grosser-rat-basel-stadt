@@ -30,7 +30,7 @@ const legendTitleAreaFlexSize = screenSize.isMobile ? 0 : 15
     <div class="council-title">
       {{ council.title }}
     </div>
-    <div class="parliament-visualization">
+    <div class="parliament-visualization" id="ttt">
       <div class="legend-title-area">
         <n-flex :size="legendTitleAreaFlexSize">
           <div class="legend-title-buffer"></div>
