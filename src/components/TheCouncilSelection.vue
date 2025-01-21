@@ -118,34 +118,17 @@ const showModal = computed(() => {
   <n-flex :size="15">
     <div>
       <n-radio-group v-model:value="option" size="small">
-        <n-radio-button
-          v-for="option in options"
-          :key="option.value"
-          :value="option.value"
-          :label="option.label"
-        />
+        <n-radio-button v-for="option in options" :key="option.value" :value="option.value" :label="option.label" />
       </n-radio-group>
     </div>
     <div>
       <n-flex :size="5">
         <!-- Hint: in JavaScript, months are zero-indexed. (2009, 1, 1) is 2009-02-01!! -->
-        <n-date-picker
-          ref="datePickerRef"
-          :disabled="disabledDatePicker"
-          v-model:value="asOfDate"
-          size="small"
-          :format="'dd.MM.yyyy'"
-          input-readonly
-          :actions="null"
-          type="date"
-          :first-day-of-week="0"
-          :is-date-disabled="
-            (date) => {
-              return date < new Date(2009, 1, 1) || date > new Date(Date.now() - 86400000)
-            }
-          "
-          :placeholder="placeholderDatePicker"
-        />
+        <n-date-picker ref="datePickerRef" :disabled="disabledDatePicker" v-model:value="asOfDate" size="small"
+          :format="'dd.MM.yyyy'" input-readonly :actions="null" type="date" :first-day-of-week="0" :is-date-disabled="(date) => {
+            return date < new Date(2009, 1, 1) || date > new Date(Date.now() - 86400000)
+          }
+            " :placeholder="placeholderDatePicker" />
         <n-button :disabled="disabledButton" type="primary" size="small" @click="council.getData">
           {{ $t("councilSelection.button.loadData") }}
         </n-button>
@@ -156,6 +139,7 @@ const showModal = computed(() => {
 
 <style scoped>
 .n-date-picker {
-  width: 139px; /* Set your desired width */
+  width: 139px;
+  /* Set your desired width */
 }
 </style>
