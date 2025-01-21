@@ -8,8 +8,8 @@ import { NFlex } from "naive-ui"
       <p>
         Die vorliegende Website ist ein unabhängiges Projekt, das auf Daten von
         <a href="https://data.bs.ch/pages/home/" target="_blank">Open Data Basel-Stadt</a>
-        basiert. Sie ist keine offizielle Veröffentlichung und wurde nicht von der Stadt Basel in
-        Auftrag gegeben.
+        basiert. Sie ist keine offizielle Veröffentlichung des Grossen Rates Basel-Stadt und wurde
+        nicht von der Stadt Basel in Auftrag gegeben.
       </p>
     </div>
     <div class="about-column" style="flex: 1">
@@ -73,27 +73,31 @@ import { NFlex } from "naive-ui"
         </li>
         <li>
           Für die Fokusierung einzelner Ratsmitglieder stehen aktuell zwölf verschiedene Farben zur
-          Verfügung. Es kann daher vorkommen, dass unterschiedliche Ratsmitglieder mit der gleichen
-          Farbe markiert werden.
+          Verfügung. Beginnend vom ersten Ratsmitlied (alphabetisch nach Vorname und Nachname)
+          erhält jedes zwölfte Mitglied die gleiche Farbe. Es kann daher vorkommen, dass
+          unterschiedliche Ratsmitglieder mit der gleichen Farbe markiert werden.
         </li>
         <li>
-          Beim Wechsel des angezeigten Grossen Rats (aktueller oder vergangener Grosser Rat), wird
+          Beim Wechsel des angezeigten Grossen Rates (aktueller oder vergangener Grosser Rat), wird
           akutell ein allfällig gesetzter Fokus auf ein Ratsmitglied entfernt.
         </li>
       </ul>
     </div>
     <div class="about-column" style="flex: 1">
       <p>
-        Der Code für die Website und die Visualisierungen ist hier verfügbar:<br />
+        Der Code für die Website und die Visualisierungen ist auf GitHub verfügbar:<br />
         <a href="https://github.com/cyrill-martin/grosser-rat-basel-stadt" target="_blank"
-          >https://github.com/cyrill-martin/<br />grosser-rat-basel-stadt</a
+          >https://github.com/cyrill-martin/grosser-rat-basel-stadt</a
         >.
       </p>
     </div>
     <div class="about-column" style="flex: 1">
       <p>
-        Dies ist eine Test-Seite und das Projekt ist "in progress".<br />
-        Feedback ist willkommen ¯\_(ツ)_/¯
+        Feedback und Änderungsvorschläge sind willkommen!<br />
+        Neues wird hier getestet:
+        <a href="https://grosserrat-bs-test.kmapper.ch/" target="_blank"
+          >https://grosserrat-bs<b>-test</b>.kmapper.ch/</a
+        >
       </p>
     </div>
     <div class="about-column" style="flex: 1">
