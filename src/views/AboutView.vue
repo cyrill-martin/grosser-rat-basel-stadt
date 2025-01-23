@@ -58,18 +58,26 @@ import { NFlex } from "naive-ui"
         <ul>
           <li>Angaben zur Parteizugehörigkeit ("Partei")</li>
           <li>Angaben zu den Interessensbindungen ("Anzahl Interessensbindungen")</li>
+          <ul>
+            <li>
+              Argeitgeber:innen werden gemäss den Daten vom Statistischen Amt Basel-Stadt nicht als
+              Interessensbindungen gezählt
+            </li>
+          </ul>
           <li>Angaben zum Beruf ("Beruf")</li>
+          <ul>
+            <li>
+              Die Angaben zum Beruf werden wie von den Ratsmitgliedern angegeben übernommen und sind
+              sehr vielfältig. "Beruf" steht daher nur als Sitzverteilung zur Auswahl, nicht aber
+              als zu visualisierendes Merkmal, da eine entsprechende Legende und Farbgebung keinen
+              Mehrwert bieten würde.
+            </li>
+          </ul>
           <li>Foto</li>
         </ul>
         <li>
           Ist "Partei", "Anzahl Interessensbindungen" oder "Beruf" ausgewählt beim Wechsel zu einem
           vergangenen Zustand des Grossen Rates, wird als Ersatz automatisch "Fraktion" gesetzt.
-        </li>
-        <li>
-          Die Angaben zum Beruf werden wie von den Ratsmitgliedern angegeben übernommen und sind
-          sehr vielfältig. "Beruf" steht daher nur als Sitzverteilung zur Auswahl, nicht aber als zu
-          visualisierendes Merkmal, da eine entsprechende Legende und Farbgebung keinen Mehrwert
-          bieten würde.
         </li>
         <li>
           Für die Fokusierung einzelner Ratsmitglieder stehen aktuell zwölf verschiedene Farben zur
@@ -80,6 +88,13 @@ import { NFlex } from "naive-ui"
         <li>
           Beim Wechsel des angezeigten Grossen Rates (aktueller oder vergangener Grosser Rat), wird
           akutell ein allfällig gesetzter Fokus auf ein Ratsmitglied entfernt.
+        </li>
+        <li>
+          Über die Tabelle mit den Schlussabstimmungen, lassen sich Resultate einzelner
+          Schlussabstimmungen importieren. Diese stehen dann als Sitzverteilung und/oder Merkmal zur
+          Auswahl. Diese Daten werden zum Teil fehlerhaft geliefert. Wenn gemäss angezeigten Daten
+          sämtliche Ratsmiglieder nicht abgestimmt haben, ist davon auszugehen, dass die Daten nicht
+          korrekt sind.
         </li>
       </ul>
     </div>
@@ -93,7 +108,7 @@ import { NFlex } from "naive-ui"
     </div>
     <div class="about-column" style="flex: 1">
       <p>
-        Feedback und Änderungsvorschläge sind willkommen!<br />
+        Feedback, Fragen, Änderungsvorschläge und Kritik sind willkommen!<br />
         Neues wird hier getestet:
         <a href="https://grosserrat-bs-test.kmapper.ch/" target="_blank"
           >https://grosserrat-bs<b>-test</b>.kmapper.ch/</a
