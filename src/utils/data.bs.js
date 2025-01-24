@@ -101,7 +101,9 @@ export async function fetchCommissionData(memberIds, asOfDate) {
     `uni_nr_adr IN (${joinedMembers}) AND beginn_mit <= '${asOfDate}' AND (ende_mit >= '${asOfDate}' OR ende_mit IS NULL) AND gremientyp="Kommission"`
   )
   const currentWhere = encodeURIComponent(
-    `uni_nr_adr IN (${joinedMembers}) AND ende_mit IS NULL AND gremientyp="Kommission"`
+    // `uni_nr_adr IN (${joinedMembers}) AND ende_mit IS NULL AND gremientyp="Kommission"`
+    // Problem: if legislation comes to an end, current members already have an ende_mit date while still in office!!
+    `uni_nr_adr IN (${joinedMembers}) AND (ende_mit >= '${formatDate(Date.now(), "api")}' OR ende_mit IS NULL) AND gremientyp="Kommission"`
   )
 
   let obj = {
