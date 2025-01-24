@@ -636,9 +636,13 @@ async function drawSeatArrangement(data) {
       screenSize.isMobile ? null : window.open(d.url, "_blank")
     })
     .on("mouseover", (_, d) =>
-      setTimeout(() => {
-        addMouseover(d)
-      }, 100)
+      setTimeout(
+        () => {
+          addMouseover(d)
+          // }, 100)
+        },
+        screenSize.isMobile ? 100 : 0
+      )
     )
     .on("mousemove", (event) => handleMouseMove(event))
     .on("mouseout", () => resetTooltip())
@@ -717,7 +721,8 @@ function resetTooltip() {
   } else {
     setTimeout(() => {
       hideTooltip()
-    }, 150)
+      // }, 150)
+    }, 0)
   }
 }
 
