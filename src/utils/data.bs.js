@@ -159,7 +159,7 @@ export async function fetchImpetusData(memberIds, asOfDate) {
 // 100186 - votes
 export async function fetchListOfVotes(asOfDate, limit, offset) {
   const asOfDateWhere = encodeURIComponent(
-    `datum <= "${asOfDate}" AND datum >= "2009-02-01" AND typ="Schlussabstimmung" anz_a != 99`
+    `datum <= "${asOfDate}" AND datum >= "2009-02-01" AND typ="Schlussabstimmung" AND anz_a != 99`
   )
   const currentWhere = encodeURIComponent(
     `typ="Schlussabstimmung" AND datum >= "2009-02-01" AND anz_a != 99`
