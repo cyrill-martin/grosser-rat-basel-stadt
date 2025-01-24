@@ -89,13 +89,6 @@ import { NFlex } from "naive-ui"
           Beim Wechsel des angezeigten Grossen Rates (aktueller oder vergangener Grosser Rat), wird
           akutell ein allfällig gesetzter Fokus auf ein Ratsmitglied entfernt.
         </li>
-        <li>
-          Über die Tabelle mit den Schlussabstimmungen, lassen sich Resultate einzelner
-          Schlussabstimmungen importieren. Diese stehen dann als Sitzverteilung und/oder Merkmal zur
-          Auswahl. Diese Daten werden zum Teil fehlerhaft geliefert. Wenn gemäss angezeigten Daten
-          sämtliche Ratsmiglieder nicht abgestimmt haben, ist davon auszugehen, dass die Daten nicht
-          korrekt sind.
-        </li>
       </ul>
     </div>
     <div class="about-column" style="flex: 1">
