@@ -163,6 +163,6 @@ export async function addVoteResults(members, voteNr, resultsMap) {
     const overallResult = resultsMap.get(member.id)
     let decision = results[`${overallResult}`]
     decision = decision ? decision : "Unbekannt"
-    member[voteNr] = overallResult ? decision : "Nicht Ratsmiglied bei Abstimmung"
+    member[voteNr] = overallResult ? decision : "Nicht Ratsmiglied"
   })
 }
