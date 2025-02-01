@@ -41,6 +41,7 @@ export const customColors = {
     jgb: "#caec85"
   },
   fraction: {
+    BastA: "#ff66b2",
     CVP: "#ffa620",
     DSP: "#ffb266",
     EVP: "#ffeb66",
@@ -48,6 +49,8 @@ export const customColors = {
     FDP: "#6699cc",
     GAB: "#b2d966",
     GLP: "#66b299",
+    "GRÜNE/jgb": "#B2D966",
+    jgb: "#caec85",
     LDP: "#4c8bca",
     "Mitte-EVP": "#2979c9",
     SBP: "#ff6666",
