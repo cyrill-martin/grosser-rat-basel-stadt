@@ -34,6 +34,17 @@ export const useCouncilStore = defineStore("council", () => {
   const seatFeature = ref(null)
   const memberFocus = ref(null)
 
+  const xAxisIsLog = ref(false)
+  const legendIsLog = ref(false)
+
+  function setXAxisIsLog(boolean) {
+    xAxisIsLog.value = boolean
+  }
+
+  function setLegendIsIsLog(boolean) {
+    legendIsLog.value = boolean
+  }
+
   watch(
     () => memberFocus.value,
     (newValue) => {
@@ -413,6 +424,10 @@ export const useCouncilStore = defineStore("council", () => {
     numberOfFetches,
     resetCurrentlyFocusedMembers,
     resetSelectedVotes,
-    resetAsOfCouncilState
+    resetAsOfCouncilState,
+    xAxisIsLog,
+    legendIsLog,
+    setXAxisIsLog,
+    setLegendIsIsLog
   }
 })

@@ -146,10 +146,17 @@ const legendScaleType = computed(() => {
   const isLinear = legendDomain.value[1] <= 100
 
   if (isString) {
+    council.setLegendIsIsLog(false)
     return { type: "band" }
+  } else if (!isString && isLinear) {
+    council.setLegendIsIsLog(false)
+    return { type: "linear" }
+  } else {
+    council.setLegendIsIsLog(true)
+    return { type: "log" }
   }
 
-  return isLinear ? { type: "linear" } : { type: "log" }
+  // return isLinear ? { type: "linear" } : { type: "log" }
 })
 
 watch(

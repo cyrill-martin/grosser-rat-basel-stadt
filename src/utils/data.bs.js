@@ -115,6 +115,7 @@ export async function fetchCommissionData(memberIds, asOfDate) {
   }
 
   let commissions = await fetchFromDataBS(obj)
+
   return new Map(commissions.results.map((item) => [item.uni_nr_adr, item.nr_of_commissions]))
 }
 

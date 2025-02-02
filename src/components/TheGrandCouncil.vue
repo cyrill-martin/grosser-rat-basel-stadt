@@ -101,9 +101,10 @@ const xDomain = computed(() => {
   if (isNumericValue(domainArray[0])) {
     const min = d3.min(domainArray)
     const max = d3.max(domainArray)
-    /* If the difference between max and min is more than 100 we'll go for a log scale
-    If the min value is also 0 we replace it with 1 as there's no 0 on a log scale */
-    return max - min > 100 && min === 0 ? [1, max] : [min, max]
+    // If the difference between max and min is more than 100 we'll go for a log scale
+    // If the min value is also 0 we replace it with 1 as there's no 0 on a log scale
+    // If it's not a log scale but min equals max, we set max to a number bigger than min
+    return max - min > 100 && min === 0 ? [1, max] : min === max ? [min, 1] : [min, max]
   }
   return domainArray.sort()
 })
