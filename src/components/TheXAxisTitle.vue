@@ -23,6 +23,19 @@ watch(
   }
 )
 
+const log2String = "(log2-Skala)"
+
+watch(
+  () => council.xAxisIsLog,
+  (newValue) => {
+    if (newValue) {
+      axisTitle.value = `${axisTitle.value.replace(log2String, "")} ${log2String}`
+    } else {
+      axisTitle.value = `${axisTitle.value.replace(log2String, "")}`
+    }
+  }
+)
+
 function isNumericKey(key) {
   return Number.isInteger(parseInt(key))
 }
@@ -38,7 +51,7 @@ function getTitle(seatArrangement) {
   } else {
     axisTitle = ""
   }
-  return axisTitle
+  return council.xAxisIsLog ? `${axisTitle} ${log2String}` : axisTitle
 }
 </script>
 

@@ -125,10 +125,17 @@ const xScaleType = computed(() => {
   const isLinear = xDomain.value[1] <= 100
 
   if (isString) {
+    council.setXAxisIsLog(false)
     return { type: "band" }
+  } else if (!isString && isLinear) {
+    council.setXAxisIsLog(false)
+    return { type: "linear" }
+  } else {
+    council.setXAxisIsLog(true)
+    return { type: "log" }
   }
 
-  return isLinear ? { type: "linear" } : { type: "log" }
+  // return isLinear ? { type: "linear" } : { type: "log" }
 })
 
 // xScaleType changes with EVERY change of the selected seat arrangement

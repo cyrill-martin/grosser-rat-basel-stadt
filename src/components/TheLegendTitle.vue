@@ -23,6 +23,19 @@ watch(
   }
 )
 
+const log2String = "(log2-Skala)"
+
+watch(
+  () => council.legendIsLog,
+  (newValue) => {
+    if (newValue) {
+      legendTitle.value = `${legendTitle.value.replace(log2String, "")} ${log2String}`
+    } else {
+      legendTitle.value = `${legendTitle.value.replace(log2String, "")}`
+    }
+  }
+)
+
 function isNumericKey(key) {
   return Number.isInteger(parseInt(key))
 }
@@ -38,7 +51,7 @@ function getTitle(seatFeature) {
   } else {
     legendTitle = ""
   }
-  return legendTitle
+  return council.legendIsLog ? `${legendTitle} ${log2String}` : legendTitle
 }
 </script>
 
