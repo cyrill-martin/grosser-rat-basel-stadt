@@ -1,5 +1,5 @@
 import { select, selectAll } from "d3-selection"
-import { min, max } from "d3-array"
+import { min, max, group } from "d3-array"
 import { axisBottom, axisRight } from "d3-axis"
 import { scaleBand, scaleOrdinal, scaleLinear, scaleLog } from "d3-scale"
 import { transition } from "d3-transition"
@@ -12,6 +12,7 @@ export default {
   selectAll,
   min,
   max,
+  group,
   axisBottom,
   axisRight,
   scaleBand,

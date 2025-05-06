@@ -159,12 +159,10 @@ export async function fetchImpetusData(memberIds, asOfDate) {
 
 // 100186 - votes
 export async function fetchListOfVotes(asOfDate, limit, offset) {
-  const asOfDateWhere = encodeURIComponent(
-    `datum <= "${asOfDate}" AND datum >= "2009-02-01" AND typ="Schlussabstimmung" AND anz_a != 99`
-  )
-  const currentWhere = encodeURIComponent(
-    `typ="Schlussabstimmung" AND datum >= "2009-02-01" AND anz_a != 99`
-  )
+  // const votesString = "datum >= '2009-02-01' AND typ='Schlussabstimmung' AND anz_a != 99"
+  const votesString = "datum >= '2009-02-01' AND anz_a != 99"
+  const asOfDateWhere = encodeURIComponent(`datum <= "${asOfDate}" AND ${votesString}`)
+  const currentWhere = encodeURIComponent(votesString)
   const myOffset = offset || false
   const myLimit = limit
 
@@ -173,7 +171,7 @@ export async function fetchListOfVotes(asOfDate, limit, offset) {
     select: encodeURIComponent("datum, signatur_ges, typ, geschaeft, abst_nr, anz_a"),
     where: asOfDate ? asOfDateWhere : currentWhere,
     groupBy: encodeURIComponent("signatur_ges, datum, typ, geschaeft, abst_nr, anz_a"),
-    orderBy: "-datum",
+    orderBy: "-datum, -abst_nr",
     limit: myLimit,
     offset: myOffset
   }
@@ -186,7 +184,8 @@ export async function fetchVoteResults(voteNr) {
   let obj = {
     dataset: "100186",
     select: encodeURIComponent("abst_nr, gr_uni_nr, entscheid_mitglied"),
-    where: encodeURIComponent(`typ="Schlussabstimmung" AND abst_nr="${voteNr}"`),
+    // where: encodeURIComponent(`typ="Schlussabstimmung" AND abst_nr="${voteNr}"`),
+    where: encodeURIComponent(`abst_nr="${voteNr}"`),
     orderBy: "-datum",
     limit: "100"
   }
