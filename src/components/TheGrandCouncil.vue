@@ -20,6 +20,7 @@ import {
   focusOpacity
 } from "../utils/customColors.js"
 import { debounce } from "../utils/debounce.js"
+import { summarize } from "../utils/summary.js"
 import d3 from "../d3-importer.js"
 
 const screenSize = useScreenSizeStore()
@@ -306,51 +307,10 @@ async function sortMembers() {
 
   console.log(members.value)
 
-  // // SEPERATE FROM FUNCTION !!
-  // ////////////////////////////
-
-  const filteredMembers = members.value.map((obj) => {
-    return {
-      name: obj.name,
-      [seatArrangement.value]: obj[seatArrangement.value],
-      [seatFeature.value]: obj[seatFeature.value]
-    }
-  })
-
-  console.log(filteredMembers)
-
-  // // Dynamically build the grouping keys
-  // const groupingKeys = []
-  // if (seatArrangement.value) {
-  //   groupingKeys.push((d) => d[seatArrangement.value])
-  // }
-  // if (seatFeature.value) {
-  //   groupingKeys.push((d) => d[seatFeature.value])
-  // }
-
-  // // Perform the grouping only if there are grouping keys
-  // if (groupingKeys.length > 0) {
-  //   const groupedData = d3.group(members.value, ...groupingKeys)
-  //   console.log(groupedData)
-
-  //   let summary = { [seatArrangement.value]: [] }
-
-  //   let outerIdx = 0
-  //   for (const [key1, value1] of groupedData) {
-  //     // key1 are seatArrangement groups
-  //     summary[seatArrangement.value].push({ Bezeichnung: key1, [seatFeature.value]: [] })
-  //     for (const [key2, value2] of value1) {
-  //       // key2 are seatFeature groups
-  //       summary[seatArrangement.value][outerIdx][seatFeature.value].push({
-  //         Bezeichnung: key2,
-  //         "Anzahl Mitglieder": value2.length
-  //       })
-  //     }
-  //     outerIdx++
-  //   }
-
-  //   console.log("test", summary)
-  // }
+  // Summary
+  if (seatArrangement.value || seatFeature.value) {
+    summarize(members.value, seatArrangement.value, seatFeature.value)
+  }
 
   // Handle the visualization
   await setColorScale()

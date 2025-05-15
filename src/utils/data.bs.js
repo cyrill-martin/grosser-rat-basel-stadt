@@ -171,7 +171,7 @@ export async function fetchListOfVotes(asOfDate, limit, offset) {
     select: encodeURIComponent("datum, signatur_ges, typ, geschaeft, abst_nr, anz_a"),
     where: asOfDate ? asOfDateWhere : currentWhere,
     groupBy: encodeURIComponent("signatur_ges, datum, typ, geschaeft, abst_nr, anz_a"),
-    orderBy: "-datum, -abst_nr",
+    orderBy: "-datum,-abst_nr",
     limit: myLimit,
     offset: myOffset
   }
