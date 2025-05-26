@@ -1,84 +1,63 @@
 import d3 from "../d3-importer.js"
 
-/* function getUniqueMemberValues(members, feature) {
-  return Array.from(new Set(members.map((member) => member[feature])))
-} */
+export async function summarize(members, arrangement, feature, translations, date) {
+  const summaryObject = await createSummaryObject(members, arrangement, feature)
+  const summary = writeSummary(summaryObject, arrangement, feature, translations, date)
+  return summary
+}
 
-/* function createSummaryObject(members, groupedData, arrangement, feature) {
-  // "party"
-  //   "fraction",
-  //     "constituency",
-  //     "gender",
-  //     "age",
-  //     "ageGroup",
-  //     // "occupation",
-  //     "daysInCouncil",
-  //     "nrCommissions",
-  //     "nrImpetuses"
-  // "nrConflictsOfInterest",
+function writeSummary(obj, arrangement, feature, translations) {
+  // Default text
+  const defaultText = "Die 100 Mitglieder des Grossen Rates Basel-Stadt"
 
-  const obj = {
-    arrangement: null,
-    nrOfArrangements: 1,
-    arrangementStats: null,
-    feature: feature,
-    nrOfFeatures: null,
-    featureStats: null,
-    groups: [
-      //   {
-      //     name: <name>,
-      //     nrOfMembers: <count>,
-      //     groupStats: {min: ..., max: ..., avg: ...}
-      //     subGroups: [
-      //       {
-      //         name: <name>,
-      //         nrOfMembers: <count>,
-      //         subGroupStats: {min: ..., max: ..., avg: ...}
-      //       }
-      //     ]
-      //   }
-    ]
-  }
+  // Selections text
+  const groupedByLabel = getGroupedByLabel(arrangement, translations)
+  const featuringLabel = getFeaturingLabel(obj.featuring, translations)
+  const extraGroupingVotingLabel = getExtraGroupingVotingLabel(arrangement, feature)
+  const extraFeaturingVotingLabel = getExtraFeaturingVotingLabel(feature)
 
-  if (arrangement) {
-    obj.arrangement = arrangement
-    obj.nrOfArrangements = groupedData.size
-  }
+  const groupedByText = `gruppiert nach${extraGroupingVotingLabel}"${groupedByLabel}"`
+  const featuringText = obj.featuring
+    ? ` und in einem zweiten Schritt nach${extraFeaturingVotingLabel}"${featuringLabel}"`
+    : null
+  const selectionsText = featuringText ? groupedByText + featuringText : groupedByText
 
-  if (feature) {
-    const uniqueValues = getUniqueMemberValues(members, feature)
-    obj.nrOfFeatures = uniqueValues.length
-  }
+  // Nr of groups text
+  const nrOfGroupsLabel = getNrOfGroupsLabel(obj.groups.length)
+  const nrOfGroupsText = `Gruppiert nach${extraGroupingVotingLabel}"${groupedByLabel}" besteht der Grosse Rat aus ${obj.groups.length} ${nrOfGroupsLabel}`
 
-  if (!arrangement && feature) {
-    obj.arrangement = "Great Council"
-    obj.groups.push({ name: "Great Council", nrOfMembers: members.length, subGroups: [] })
-  }
+  // Additional grouping text
+  const maxGroups = findMaxGroups(obj)
+  console.log(maxGroups)
+  const nrOfMaxGroupsLabel = getNrOfGroupsLabel(maxGroups.length)
+  const maxGroupsText = `Grösste ${nrOfMaxGroupsLabel} betreffend${extraGroupingVotingLabel}"${groupedByLabel}": ${getListOfMaxGroups(maxGroups)}`
 
-  let outerIndex = 0
-  for (const [key, value] of groupedData.entries()) {
-    // arrangement only
-    if (arrangement && !feature) {
-      obj.groups.push({ name: key, nrOfMembers: value.length })
-    }
-    // feature only
-    else if (!arrangement && feature) {
-      obj.groups[0].subGroups.push({ name: key, nrOfMembers: value.length })
-    }
-    // both
-    else {
-      obj.groups.push({ name: key, nrOfMembers: 0, subGroups: [] })
+  // Additional grouping text
+  const additionalGroupingText = getAdditionalGroupingText(obj, maxGroupsText, groupedByLabel)
 
-      for (const [key2, value2] of value.entries()) {
-        obj.groups[outerIndex].subGroups.push({ name: key2, nrOfMembers: value2.length })
-        obj.groups[outerIndex].nrOfMembers = obj.groups[outerIndex].nrOfMembers + value2.length
-      }
-    }
-    outerIndex++
-  }
-  console.log(obj)
-  return obj
-} */
+  // Sub-group text(s)
+  const subGroupText = getSubGroupText(
+    obj,
+    extraFeaturingVotingLabel,
+    maxGroups,
+    groupedByLabel,
+    translations,
+    featuringLabel
+  )
+
+  // Default summary text
+  let summaryText = `${defaultText}: ${selectionsText}.
+${nrOfGroupsText}.
+${additionalGroupingText}
+`
+  // Add sub-group texts(s) if necesarry
+  if (subGroupText) summaryText += `${subGroupText}`
+
+  // Clean up the text
+  const finalText = cleanUpText(summaryText)
+
+  return finalText
+}
 
 const categorialVariables = [
   "party",
@@ -88,6 +67,140 @@ const categorialVariables = [
   "ageGroup",
   "occupation"
 ]
+
+function isNumericValue(value) {
+  return Number.isInteger(Number(value))
+}
+
+function getGroupedByLabel(arrangement, translations) {
+  return arrangement ? translations.arrangement : translations.feature
+}
+
+function getFeaturingLabel(featuring, translations) {
+  return featuring ? translations.feature : null
+}
+
+function getExtraGroupingVotingLabel(arrangement, feature) {
+  return (arrangement && isNumericValue(arrangement)) ||
+    (!arrangement && feature && isNumericValue(feature))
+    ? "@Abstimmung@"
+    : "@"
+}
+
+function getExtraFeaturingVotingLabel(feature) {
+  return feature && isNumericValue(feature) ? "@Abstimmung@" : "@"
+}
+
+function getNrOfGroupsLabel(nrOfGroups) {
+  return nrOfGroups === 1 ? "Gruppe" : "Gruppen"
+}
+
+function getMaxNrOfMembers(obj) {
+  const maxNrOfMembers = obj.groups.reduce((max, current) => {
+    return current.nrOfMembers > max ? current.nrOfMembers : max
+  }, 0)
+  return maxNrOfMembers
+}
+
+function findMaxGroups(obj) {
+  const maxNrOfMembers = getMaxNrOfMembers(obj)
+  const maxGroups = obj.groups.filter((group) => group.nrOfMembers === maxNrOfMembers)
+  return maxGroups
+}
+
+function getNrOfGroupMembersLabel(nrOfMembers) {
+  return nrOfMembers === 1 ? "Mitglied" : "Mitglieder"
+}
+
+function getListOfMaxGroups(maxGroups) {
+  return maxGroups
+    .map((group) => {
+      const nrOfMaxGroupMembersLabel = getNrOfGroupMembersLabel(group.nrOfMembers)
+      return `${group.name} (${group.nrOfMembers} ${nrOfMaxGroupMembersLabel})`
+    })
+    .join(", ")
+}
+
+function getCategorialSubGroupText(subGroups) {
+  const text = subGroups.map((group) => {
+    const membersLabel = getNrOfGroupMembersLabel(group.nrOfMembers)
+    return `- ${group.name} (${group.nrOfMembers} ${membersLabel})\n`
+  })
+  return text.join("")
+}
+
+function getAdditionalGroupingText(obj, maxGroupsText, groupedByLabel) {
+  let additionalGroupingText
+
+  if (categorialVariables.includes(obj.groupedBy) || isNumericValue(obj.groupedBy)) {
+    additionalGroupingText = `${maxGroupsText}.`
+  } else {
+    additionalGroupingText = `${groupedByLabel}: 
+- minimaler Wert: ${obj[obj.groupedBy].min}
+- maximaler Wert: ${obj[obj.groupedBy].max}
+- durchschnittlicher Wert: ${obj[obj.groupedBy].mean}
+${maxGroupsText}.`
+  }
+
+  return additionalGroupingText
+}
+
+function getSubGroupTextLabel(group, extraFeaturingVotingLabel, groupedByLabel, translations) {
+  let subGroupTextLabel
+  if (extraFeaturingVotingLabel === "@Abstimmung@") {
+    subGroupTextLabel =
+      group.subGroups.length === 1 ? "Abstimmungsresultat" : "Abstimmungsresultate"
+  } else {
+    subGroupTextLabel = group.subGroups.length === 1 ? groupedByLabel : translations.featurePlural
+  }
+
+  return subGroupTextLabel
+}
+
+function getSubGroupText(
+  obj,
+  extraFeaturingVotingLabel,
+  maxGroups,
+  groupedByLabel,
+  translations,
+  featuringLabel
+) {
+  let subGroupText
+
+  if (
+    obj.featuring &&
+    (categorialVariables.includes(obj.featuring) || isNumericValue(obj.featuring))
+  ) {
+    subGroupText = maxGroups
+      .map((group) => {
+        const subGroupTextLabel = getSubGroupTextLabel(
+          group,
+          extraFeaturingVotingLabel,
+          groupedByLabel,
+          translations
+        )
+
+        return `Innerhalb der Gruppe "${group.name}" hat es ${group.subGroups.length} ${subGroupTextLabel}: 
+${getCategorialSubGroupText(group.subGroups)}`
+      })
+      .join("\n")
+  } else if (obj.featuring && !categorialVariables.includes(obj.featuring)) {
+    subGroupText = maxGroups
+      .map((group) => {
+        return `${featuringLabel} innerhalb der Gruppe "${group.name}": 
+- minimaler Wert: ${group[obj.featuring].min}
+- maximaler Wert: ${group[obj.featuring].max}
+- durchschnittlicher Wert: ${group[obj.featuring].mean}`
+      })
+      .join("\n")
+  }
+
+  return subGroupText
+}
+
+function cleanUpText(text) {
+  return text.replace(/@/g, " ")
+}
 
 function calculateStats(data, key) {
   return {
@@ -120,22 +233,26 @@ function getNestedGroupsWithCounts(groupedData) {
   return groups
 }
 
-export async function summarize(members, arrangement, feature) {
+async function createSummaryObject(members, arrangement, feature) {
   const groupingKeys = []
 
-  const stats = {
-    selectedArrangement: arrangement,
-    selectedFeature: feature,
+  const obj = {
+    groupedBy: arrangement ? arrangement : feature,
     groups: null
   }
 
+  const arrangementIsNumeric = arrangement ? isNumericValue(arrangement) : false
+  const featureIsNumeric = feature ? isNumericValue(feature) : false
+
+  if (arrangement && feature) obj.featuring = feature
+
   let groupedData
 
-  if (arrangement && categorialVariables.includes(arrangement)) {
+  if (arrangement && (categorialVariables.includes(arrangement) || arrangementIsNumeric)) {
     // First-level grouping key
     groupingKeys.push((d) => d[arrangement])
 
-    if (feature && categorialVariables.includes(feature)) {
+    if (feature && (categorialVariables.includes(feature) || featureIsNumeric)) {
       // Second-level grouping key
       groupingKeys.push((d) => d[feature])
     }
@@ -145,28 +262,28 @@ export async function summarize(members, arrangement, feature) {
 
     if (groupingKeys.length === 1) {
       // Get the number of members in each group
-      stats.groups = getGroupsWithCounts(groupedData)
+      obj.groups = getGroupsWithCounts(groupedData)
     }
 
     if (groupingKeys.length === 2) {
       // Get the number of members in each group by adding the members of each subgroup
-      stats.groups = getNestedGroupsWithCounts(groupedData)
+      obj.groups = getNestedGroupsWithCounts(groupedData)
     }
 
-    if (feature && !categorialVariables.includes(feature)) {
+    if (feature && !categorialVariables.includes(feature) && !featureIsNumeric) {
       // Calculate statistics for each group
       let idx = 0
       for (const value of groupedData.values()) {
-        stats.groups[idx][feature] = calculateStats(value, feature)
+        obj.groups[idx][feature] = calculateStats(value, feature)
         idx++
       }
     }
-  } else if (arrangement && !categorialVariables.includes(arrangement)) {
+  } else if (arrangement && !categorialVariables.includes(arrangement) && !arrangementIsNumeric) {
     // Get overall arrangement stats
-    stats[arrangement] = calculateStats(members, arrangement)
+    obj[arrangement] = calculateStats(members, arrangement)
     groupingKeys.push((d) => d[arrangement])
 
-    if (feature && categorialVariables.includes(feature)) {
+    if (feature && (categorialVariables.includes(feature) || featureIsNumeric)) {
       // feature: true && categorial
       groupingKeys.push((d) => d[feature])
     }
@@ -175,19 +292,19 @@ export async function summarize(members, arrangement, feature) {
 
     if (groupingKeys.length === 1) {
       // Get the number of members in each group
-      stats.groups = getGroupsWithCounts(groupedData)
+      obj.groups = getGroupsWithCounts(groupedData)
     }
 
     if (groupingKeys.length === 2) {
       // Get the number of members in each group by adding the members of each subgroup
-      stats.groups = getNestedGroupsWithCounts(groupedData)
+      obj.groups = getNestedGroupsWithCounts(groupedData)
     }
 
-    if (feature && !categorialVariables.includes(feature)) {
+    if (feature && !categorialVariables.includes(feature) && !featureIsNumeric) {
       // Calculate statistics for each group
       let idx = 0
       for (const value of groupedData.values()) {
-        stats.groups[idx][feature] = calculateStats(value, feature)
+        obj.groups[idx][feature] = calculateStats(value, feature)
         idx++
       }
     }
@@ -198,16 +315,13 @@ export async function summarize(members, arrangement, feature) {
       groupedData = d3.group(members, ...groupingKeys)
 
       // Get the number of members in each group
-      stats.groups = getGroupsWithCounts(groupedData)
+      obj.groups = getGroupsWithCounts(groupedData)
 
-      if (!categorialVariables.includes(feature)) {
-        stats[feature] = calculateStats(members, feature)
+      if (!categorialVariables.includes(feature) && !featureIsNumeric) {
+        obj[feature] = calculateStats(members, feature)
       }
     }
   }
 
-  console.log(stats)
-  console.log(groupedData)
-
-  // createSummaryObject(members, rolledUpData, arrangement, feature)
+  return obj
 }

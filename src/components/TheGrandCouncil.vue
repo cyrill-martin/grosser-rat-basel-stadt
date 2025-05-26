@@ -22,9 +22,12 @@ import {
 import { debounce } from "../utils/debounce.js"
 import { summarize } from "../utils/summary.js"
 import d3 from "../d3-importer.js"
+import { useI18n } from "vue-i18n"
 
 const screenSize = useScreenSizeStore()
 const council = useCouncilStore()
+
+const { t } = useI18n()
 
 // Lifecycle ///////////////////////////////////////////////////////
 onMounted(() => {
@@ -265,6 +268,47 @@ async function setVizDimensions(element) {
     vizDimensions.value.height - vizDimensions.value.margin.top - vizDimensions.value.margin.bottom
 }
 
+async function getTranslationsForTextSummary() {
+  const translations = { arrangement: null, feature: null, featurePlural: null }
+
+  if (seatArrangement.value) {
+    if (isNumericValue(seatArrangement.value)) {
+      const targetVotes = council.asOfDate
+        ? council.listOfVotesAsOfDate
+        : council.listOfVotesCurrent
+      const voteObj = targetVotes.find((vote) => vote.voteNr === seatArrangement.value)
+      translations.arrangement = voteObj.voteTitle
+    } else {
+      translations.arrangement = t(`seatSelection.${seatArrangement.value}`)
+    }
+  }
+
+  if (seatFeature.value) {
+    const categorialFeatures = [
+      "party",
+      "fraction",
+      "constituency",
+      "gender",
+      "ageGroup",
+      "occupation"
+    ]
+    if (isNumericValue(seatFeature.value)) {
+      const targetVotes = council.asOfDate
+        ? council.listOfVotesAsOfDate
+        : council.listOfVotesCurrent
+      const voteObj = targetVotes.find((vote) => vote.voteNr === seatFeature.value)
+      translations.feature = voteObj.voteTitle
+    } else {
+      translations.feature = t(`seatSelection.${seatFeature.value}`)
+      if (categorialFeatures.includes(seatFeature.value)) {
+        translations.featurePlural = t(`seatSelection.${seatFeature.value}.plural`)
+      }
+    }
+  }
+
+  return translations
+}
+
 // Sort the members for the visualization
 async function sortMembers() {
   // Sorting
@@ -305,11 +349,22 @@ async function sortMembers() {
   // Keep track of the highest number of members in a group
   maxGroupMembers.value = highestIndex + 1
 
-  console.log(members.value)
+  // console.log(members.value)
 
   // Summary
   if (seatArrangement.value || seatFeature.value) {
-    summarize(members.value, seatArrangement.value, seatFeature.value)
+    const translations = await getTranslationsForTextSummary()
+
+    const textSummary = await summarize(
+      members.value,
+      seatArrangement.value,
+      seatFeature.value,
+      translations
+    )
+
+    council.setSummaryText(textSummary)
+  } else {
+    council.setSummaryText(null)
   }
 
   // Handle the visualization

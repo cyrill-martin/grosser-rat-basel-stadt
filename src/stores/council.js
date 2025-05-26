@@ -95,6 +95,9 @@ export const useCouncilStore = defineStore("council", () => {
   const numberOfFetches = ref(0)
   const newFetchingDone = ref(false)
 
+  // Summary text
+  const summaryText = ref(null)
+
   async function resetCurrentlyFocusedMembers() {
     membersCurrent.value.forEach((member) => (member.focus = false))
   }
@@ -390,6 +393,11 @@ export const useCouncilStore = defineStore("council", () => {
     createFocusOptions(members)
   }
 
+  function setSummaryText(text) {
+    console.log("Summary", text)
+    summaryText.value = text
+  }
+
   return {
     asOfDate,
     asOfTimestamp,
@@ -428,6 +436,8 @@ export const useCouncilStore = defineStore("council", () => {
     xAxisIsLog,
     legendIsLog,
     setXAxisIsLog,
-    setLegendIsIsLog
+    setLegendIsIsLog,
+    setSummaryText,
+    summaryText
   }
 })

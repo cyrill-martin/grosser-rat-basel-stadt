@@ -13,7 +13,7 @@ async function fetchFromDataBS(obj) {
   if (limit) url += `&limit=${limit}`
   if (offset) url += `&offset=${offset}`
 
-  console.log(`GET - ${dataset}`, url)
+  // console.log(`GET - ${dataset}`, url)
 
   const controller = new AbortController()
   const timeoutId = setTimeout(() => controller.abort(), 10000)
