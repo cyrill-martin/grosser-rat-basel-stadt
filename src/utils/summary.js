@@ -8,7 +8,7 @@ export async function summarize(members, arrangement, feature, translations, dat
 
 function writeSummary(obj, arrangement, feature, translations) {
   // Default text
-  const defaultText2 = "100 Menschen"
+  const defaultText2 = "100 Personen"
 
   // Selections text
   const groupedByLabel = getGroupedByLabel(arrangement, translations)
