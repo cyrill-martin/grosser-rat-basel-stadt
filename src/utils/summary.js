@@ -8,55 +8,51 @@ export async function summarize(members, arrangement, feature, translations, dat
 
 function writeSummary(obj, arrangement, feature, translations) {
   // Default text
-  const defaultText = "Die 100 Mitglieder des Grossen Rates Basel-Stadt"
+  const defaultText2 = "100 Menschen"
 
   // Selections text
   const groupedByLabel = getGroupedByLabel(arrangement, translations)
   const featuringLabel = getFeaturingLabel(obj.featuring, translations)
-  const extraGroupingVotingLabel = getExtraGroupingVotingLabel(arrangement, feature)
   const extraFeaturingVotingLabel = getExtraFeaturingVotingLabel(feature)
-
-  const groupedByText = `gruppiert nach${extraGroupingVotingLabel}"${groupedByLabel}"`
-  const featuringText = obj.featuring
-    ? ` und in einem zweiten Schritt nach${extraFeaturingVotingLabel}"${featuringLabel}"`
-    : null
-  const selectionsText = featuringText ? groupedByText + featuringText : groupedByText
 
   // Nr of groups text
   const nrOfGroupsLabel = getNrOfGroupsLabel(obj.groups.length)
-  const nrOfGroupsText = `Gruppiert nach${extraGroupingVotingLabel}"${groupedByLabel}" besteht der Grosse Rat aus ${obj.groups.length} ${nrOfGroupsLabel}`
+  // const nrOfGroupsText = `Gruppiert nach${extraGroupingVotingLabel}"${groupedByLabel}" besteht der Grosse Rat aus ${obj.groups.length} ${nrOfGroupsLabel}`
+  const nrOfGroupsText2 = `${obj.groups.length} ${nrOfGroupsLabel}`
 
   // Additional grouping text
   const maxGroups = findMaxGroups(obj)
   console.log(maxGroups)
   const nrOfMaxGroupsLabel = getNrOfGroupsLabel(maxGroups.length)
-  const maxGroupsText = `Grösste ${nrOfMaxGroupsLabel} betreffend${extraGroupingVotingLabel}"${groupedByLabel}": ${getListOfMaxGroups(maxGroups)}`
+  const maxGroupsText2 = `Grösste ${nrOfMaxGroupsLabel}: ${getListOfMaxGroups(maxGroups)}`
 
   // Additional grouping text
-  const additionalGroupingText = getAdditionalGroupingText(obj, maxGroupsText, groupedByLabel)
+  const additionalGroupingText2 = getAdditionalGroupingText2(
+    obj,
+    nrOfGroupsText2,
+    maxGroupsText2,
+    groupedByLabel
+  )
 
   // Sub-group text(s)
-  const subGroupText = getSubGroupText(
+  const subGroupText2 = getSubGroupText2(
     obj,
     extraFeaturingVotingLabel,
     maxGroups,
-    groupedByLabel,
     translations,
     featuringLabel
   )
 
-  // Default summary text
-  let summaryText = `${defaultText}: ${selectionsText}.
-${nrOfGroupsText}.
-${additionalGroupingText}
+  let summaryText2 = `${defaultText2}.
+${additionalGroupingText2}
 `
   // Add sub-group texts(s) if necesarry
-  if (subGroupText) summaryText += `${subGroupText}`
+  if (subGroupText2) summaryText2 += `${subGroupText2}`
 
   // Clean up the text
-  const finalText = cleanUpText(summaryText)
+  const finalText2 = cleanUpText(summaryText2)
 
-  return finalText
+  return finalText2
 }
 
 const categorialVariables = [
@@ -78,13 +74,6 @@ function getGroupedByLabel(arrangement, translations) {
 
 function getFeaturingLabel(featuring, translations) {
   return featuring ? translations.feature : null
-}
-
-function getExtraGroupingVotingLabel(arrangement, feature) {
-  return (arrangement && isNumericValue(arrangement)) ||
-    (!arrangement && feature && isNumericValue(feature))
-    ? "@Abstimmung@"
-    : "@"
 }
 
 function getExtraFeaturingVotingLabel(feature) {
@@ -109,62 +98,54 @@ function findMaxGroups(obj) {
 }
 
 function getNrOfGroupMembersLabel(nrOfMembers) {
-  return nrOfMembers === 1 ? "Mitglied" : "Mitglieder"
+  return nrOfMembers === 1 ? "Person" : "Personen"
 }
 
 function getListOfMaxGroups(maxGroups) {
   return maxGroups
     .map((group) => {
       const nrOfMaxGroupMembersLabel = getNrOfGroupMembersLabel(group.nrOfMembers)
-      return `${group.name} (${group.nrOfMembers} ${nrOfMaxGroupMembersLabel})`
+      return `'${group.name}' (${group.nrOfMembers} ${nrOfMaxGroupMembersLabel})`
     })
     .join(", ")
 }
 
 function getCategorialSubGroupText(subGroups) {
   const text = subGroups.map((group) => {
-    const membersLabel = getNrOfGroupMembersLabel(group.nrOfMembers)
-    return `- ${group.name} (${group.nrOfMembers} ${membersLabel})\n`
+    // const membersLabel = getNrOfGroupMembersLabel(group.nrOfMembers)
+    return `- ${group.name} (${group.nrOfMembers})\n`
   })
   return text.join("")
 }
 
-function getAdditionalGroupingText(obj, maxGroupsText, groupedByLabel) {
+function getAdditionalGroupingText2(obj, nrOfGroupsText2, maxGroupsText2, groupedByLabel) {
   let additionalGroupingText
 
   if (categorialVariables.includes(obj.groupedBy) || isNumericValue(obj.groupedBy)) {
-    additionalGroupingText = `${maxGroupsText}.`
+    additionalGroupingText = `${nrOfGroupsText2}.
+${maxGroupsText2}.`
   } else {
-    additionalGroupingText = `${groupedByLabel}: 
-- minimaler Wert: ${obj[obj.groupedBy].min}
-- maximaler Wert: ${obj[obj.groupedBy].max}
-- durchschnittlicher Wert: ${obj[obj.groupedBy].mean}
-${maxGroupsText}.`
+    additionalGroupingText = `${groupedByLabel}: Min: ${obj[obj.groupedBy].min}, Max: ${obj[obj.groupedBy].max}, Schnitt: ${obj[obj.groupedBy].mean}.
+${nrOfGroupsText2}.
+${maxGroupsText2}.`
   }
 
   return additionalGroupingText
 }
 
-function getSubGroupTextLabel(group, extraFeaturingVotingLabel, groupedByLabel, translations) {
+function getSubGroupTextLabel(group, extraFeaturingVotingLabel, featuringLabel, translations) {
   let subGroupTextLabel
   if (extraFeaturingVotingLabel === "@Abstimmung@") {
     subGroupTextLabel =
       group.subGroups.length === 1 ? "Abstimmungsresultat" : "Abstimmungsresultate"
   } else {
-    subGroupTextLabel = group.subGroups.length === 1 ? groupedByLabel : translations.featurePlural
+    subGroupTextLabel = group.subGroups.length === 1 ? featuringLabel : translations.featurePlural
   }
 
   return subGroupTextLabel
 }
 
-function getSubGroupText(
-  obj,
-  extraFeaturingVotingLabel,
-  maxGroups,
-  groupedByLabel,
-  translations,
-  featuringLabel
-) {
+function getSubGroupText2(obj, extraFeaturingVotingLabel, maxGroups, translations, featuringLabel) {
   let subGroupText
 
   if (
@@ -176,21 +157,18 @@ function getSubGroupText(
         const subGroupTextLabel = getSubGroupTextLabel(
           group,
           extraFeaturingVotingLabel,
-          groupedByLabel,
+          featuringLabel,
           translations
         )
 
-        return `Innerhalb der Gruppe "${group.name}" hat es ${group.subGroups.length} ${subGroupTextLabel}: 
+        return `...darin ${group.subGroups.length} ${subGroupTextLabel}:
 ${getCategorialSubGroupText(group.subGroups)}`
       })
       .join("\n")
   } else if (obj.featuring && !categorialVariables.includes(obj.featuring)) {
     subGroupText = maxGroups
       .map((group) => {
-        return `${featuringLabel} innerhalb der Gruppe "${group.name}": 
-- minimaler Wert: ${group[obj.featuring].min}
-- maximaler Wert: ${group[obj.featuring].max}
-- durchschnittlicher Wert: ${group[obj.featuring].mean}`
+        return `${featuringLabel} in '${group.name}': Min: ${group[obj.featuring].min}, Max: ${group[obj.featuring].max}, Schnitt: ${group[obj.featuring].mean}.`
       })
       .join("\n")
   }

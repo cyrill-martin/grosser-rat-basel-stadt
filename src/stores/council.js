@@ -394,8 +394,8 @@ export const useCouncilStore = defineStore("council", () => {
   }
 
   function setSummaryText(text) {
-    console.log("Summary", text)
     summaryText.value = text
+    console.log(summaryText.value)
   }
 
   return {

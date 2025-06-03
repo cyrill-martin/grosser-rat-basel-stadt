@@ -1,6 +1,6 @@
 <script setup>
 import { defineAsyncComponent } from "vue"
-import { NConfigProvider, NMessageProvider, NFlex } from "naive-ui"
+import { NConfigProvider, NMessageProvider, NNotificationProvider, NFlex } from "naive-ui"
 import { RouterView } from "vue-router"
 const TheHeader = defineAsyncComponent(() => import("./components/layout/TheHeader.vue"))
 const TheFooter = defineAsyncComponent(() => import("./components/layout/TheFooter.vue"))
@@ -19,18 +19,20 @@ const dateDeDE = createLocale({
 <template>
   <n-config-provider :theme-overrides="naiveUithemeOverrides" :date-locale="dateDeDE">
     <n-message-provider>
-      <TheUrlHandler />
-      <n-flex vertical :size="0" class="app-container">
-        <header>
-          <TheHeader />
-        </header>
-        <main>
-          <RouterView />
-        </main>
-        <footer>
-          <TheFooter />
-        </footer>
-      </n-flex>
+      <n-notification-provider placement="top" max="1">
+        <TheUrlHandler />
+        <n-flex vertical :size="0" class="app-container">
+          <header>
+            <TheHeader />
+          </header>
+          <main>
+            <RouterView />
+          </main>
+          <footer>
+            <TheFooter />
+          </footer>
+        </n-flex>
+      </n-notification-provider>
     </n-message-provider>
   </n-config-provider>
 </template>

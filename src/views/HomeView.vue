@@ -1,8 +1,9 @@
 <script setup>
-import { defineAsyncComponent } from "vue"
-import { NFlex } from "naive-ui"
+import { defineAsyncComponent, computed, watch } from "vue"
+import { NFlex, NIcon, useNotification } from "naive-ui"
 import { useScreenSizeStore } from "../stores/screenSize.js"
 import { useCouncilStore } from "../stores/council.js"
+import { ChatbubbleEllipsesOutline } from "@vicons/ionicons5"
 const TheCouncilSelection = defineAsyncComponent(
   () => import("../components/TheCouncilSelection.vue")
 )
@@ -16,8 +17,34 @@ const TheLegend = defineAsyncComponent(() => import("../components/TheLegend.vue
 
 const screenSize = useScreenSizeStore()
 const council = useCouncilStore()
+const notification = useNotification()
 
-const legendTitleAreaFlexSize = screenSize.isMobile ? 0 : 15
+const legendTitleAreaFlexSize = computed(() => {
+  return screenSize.isMobile ? 0 : 15
+})
+
+const iconGap = computed(() => {
+  return screenSize.isMobile ? 2 : 10
+})
+
+const iconSize = computed(() => {
+  return screenSize.isMobile ? 20 : 35
+})
+
+const reactiveSummary = computed(() => council.summaryText)
+
+function showSummary() {
+  notification.create({
+    content: reactiveSummary
+  })
+}
+
+watch(
+  () => council.summaryText,
+  (newValue) => {
+    if (!newValue) notification.destroyAll()
+  }
+)
 </script>
 
 <template>
@@ -28,7 +55,12 @@ const legendTitleAreaFlexSize = screenSize.isMobile ? 0 : 15
       </n-flex>
     </div>
     <div class="council-title">
-      {{ council.title }}
+      <n-flex :size="iconGap">
+        {{ council.title }}
+        <span class="summary-icon" v-if="council.summaryText"
+          ><n-icon :size="iconSize" @click="showSummary"><ChatbubbleEllipsesOutline /></n-icon
+        ></span>
+      </n-flex>
     </div>
     <div class="parliament-visualization" id="ttt">
       <div class="legend-title-area">
@@ -88,6 +120,10 @@ const legendTitleAreaFlexSize = screenSize.isMobile ? 0 : 15
   margin-top: 2rem;
   font-size: 1.5rem;
   font-weight: 500;
+}
+
+.summary-icon {
+  cursor: pointer;
 }
 
 .parliament-area {
