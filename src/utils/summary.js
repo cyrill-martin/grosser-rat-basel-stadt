@@ -112,8 +112,8 @@ function getListOfMaxGroups(maxGroups) {
 
 function getCategorialSubGroupText(subGroups) {
   const text = subGroups.map((group) => {
-    // const membersLabel = getNrOfGroupMembersLabel(group.nrOfMembers)
-    return `- ${group.name} (${group.nrOfMembers})\n`
+    const membersLabel = getNrOfGroupMembersLabel(group.nrOfMembers)
+    return `- ${group.name} (${group.nrOfMembers} ${membersLabel})\n`
   })
   return text.join("")
 }
