@@ -25,13 +25,13 @@
   "devDependencies": {
     "@rushstack/eslint-patch": "^1.8.0",
     "@vicons/ionicons5": "^0.12.0",
-    "@vitejs/plugin-vue": "^5.0.5",
+    "@vitejs/plugin-vue": "^5.2.4",
     "@vue/eslint-config-prettier": "^9.0.0",
     "eslint": "^8.57.0",
     "eslint-plugin-vue": "^9.23.0",
     "naive-ui": "^2.40.1",
     "prettier": "^3.2.5",
     "vfonts": "^0.0.3",
-    "vite": "^5.3.1"
+    "vite": "^8.0.14"
   }
 }
